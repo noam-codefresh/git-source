@@ -5,14 +5,15 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
 spec:
-  project: restricted-1-proj
+  project: default # restricted-1-proj
   source:
     path: some-path
     repoURL: https://github.com/noam-codefresh/canary-111.git
     targetRevision: HEAD
   destination:
-    name: in-cluster
-    namespace: restricted-apps-1
+    server: https://0CC752BCF7DB39782759C9BF6A16B084.gr7.us-east-1.eks.amazonaws.com
+    namespace: default
+    # namespace: restricted-apps-1
   syncPolicy:
     automated:
       prune: true
