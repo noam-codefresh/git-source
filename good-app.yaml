@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: canary-111
+  name: good-app
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
 spec:

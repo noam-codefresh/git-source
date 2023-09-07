@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bad-app
+  name: wrong-dest-ns
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
 spec:
