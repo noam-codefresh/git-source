@@ -11,7 +11,7 @@ spec:
     repoURL: https://github.com/noam-codefresh/canary-111.git
     targetRevision: HEAD
   destination:
-    server: https://0CC752BCF7DB39782759C9BF6A16B084.gr7.us-east-1.eks.amazonaws.com
+    server: in-cluster
     namespace: restricted-apps-1
   syncPolicy:
     automated:
