@@ -1,18 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bad-app
+  name: another-bad-app
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
 spec:
-  project: restricted-proj-1
+  project: default
   source:
     path: some-path
     repoURL: https://github.com/noam-codefresh/canary-111.git
     targetRevision: HEAD
   destination:
     name: in-cluster
-    namespace: runtime
+    namespace: restricted-apps-1
   syncPolicy:
     automated:
       prune: true
