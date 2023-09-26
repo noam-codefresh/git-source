@@ -12,7 +12,7 @@ spec:
     targetRevision: HEAD
   destination:
     name: in-cluster
-    namespace: restricted-apps-1
+    namespace: marvel-team-resources
   syncPolicy:
     automated:
       prune: true

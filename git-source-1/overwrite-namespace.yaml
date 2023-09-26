@@ -13,7 +13,7 @@ spec:
     targetRevision: HEAD
   destination:
     name: in-cluster
-    namespace: runtime
+    namespace: marvel-team-resources
   syncPolicy:
     automated:
       prune: true
