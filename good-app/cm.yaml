@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: config-map-good-app
 data:
-  key: value-1
+  key: value-2
