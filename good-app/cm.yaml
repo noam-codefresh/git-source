@@ -2,8 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: config-map-good-app
-  label:
-    app: good-app
 data:
   key: value-9
   key-3: value-4
