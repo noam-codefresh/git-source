@@ -13,7 +13,7 @@
 #     targetRevision: HEAD
 #   destination:
 #     name: in-cluster
-#     namespace: marvel-team-resources
+#     namespace: team-marvel-zone
 #   syncPolicy:
 #     automated:
 #       prune: true
