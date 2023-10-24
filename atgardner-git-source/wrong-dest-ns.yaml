@@ -1,18 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: good-app
+  name: wrong-dest-ns
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
 spec:
-  project: default
+  project: restricted-gs
   source:
-    path: good-app
+    path: wrong-dest-ns
     repoURL: https://github.com/noam-codefresh/git-source.git
     targetRevision: HEAD
   destination:
     name: in-cluster
-    namespace: team-marvel-zone
+    namespace: runtime
   syncPolicy:
     automated:
       prune: true

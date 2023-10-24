@@ -13,7 +13,7 @@
 #     targetRevision: HEAD
 #   destination:
 #     name: in-cluster
-#     namespace: team-marvel-zone
+#     namespace: hulk-app-zone
 #   syncPolicy:
 #     automated:
 #       prune: true
