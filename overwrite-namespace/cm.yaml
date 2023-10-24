@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: config-map-overwrite-namesapce
 data:
-  key: value-1
+  key: value

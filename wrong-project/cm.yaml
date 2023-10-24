@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: config-map-wrong-project
 data:
-  key: value-1
+  key: value
