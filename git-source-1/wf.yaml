@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  generateName: simple-workflow
+  name: simple-workflow
 spec:
   serviceAccountName: codefresh-sa
   entrypoint: whalesay
