@@ -5,7 +5,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
 spec:
-  project: default
+  project: default # <-- illeagal project
   source:
     path: wrong-project
     repoURL: https://github.com/noam-codefresh/git-source.git

@@ -12,7 +12,7 @@ spec:
     targetRevision: HEAD
   destination:
     name: in-cluster
-    namespace: runtime
+    namespace: runtime # <-- illeagal namespace
   syncPolicy:
     automated:
       prune: true
