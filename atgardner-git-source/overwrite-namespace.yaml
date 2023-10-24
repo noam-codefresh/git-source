@@ -6,7 +6,7 @@
 #   finalizers:
 #     - resources-finalizer.argocd.argoproj.io/foreground
 # spec:
-#   project: restricted-gs
+#   project: hulk-team
 #   source:
 #     path: overwrite-namespace
 #     repoURL: https://github.com/noam-codefresh/git-source.git
