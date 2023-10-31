@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: example-dev
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/foreground
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/aperture-sci/promotion-example.git
+    targetRevision: HEAD
+    path: loans
+    helm:
+      releaseName: example-dev
+  destination:
+    name: in-cluster
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - PrunePropagationPolicy=foreground
+      - Replace=false
+      - PruneLast=false
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=false
