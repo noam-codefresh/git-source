@@ -1,0 +1,9 @@
+apiVersion: v2
+appVersion: 1.0.0
+description: Codefresh gitops runtime umbrella chart
+name: loans
+version: 1.0.0
+dependencies:
+  - name: loans
+    repository: https://github.com/aperture-sci/promotion-example/main/loans
+    version: 1.0.0
