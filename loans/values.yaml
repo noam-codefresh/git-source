@@ -1,4 +1,0 @@
-loans:
-  image:
-    repository: quay.io/noam_codefresh/loans
-    tag: v1
