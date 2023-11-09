@@ -4,7 +4,7 @@ metadata:
   name: base-kustomize
 spec:
   applicationSourceSelector:
-    matchLabel:
+    matchLabels:
       app: kustomize-app
   versionSource:
     file: kustomization.yaml

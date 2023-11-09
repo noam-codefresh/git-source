@@ -4,7 +4,7 @@ metadata:
   name: some-vanilla
 spec:
   applicationSourceSelector:
-    matchLabel:
+    matchLabels:
       app: sample-app
   versionSource:
     file: backend.yaml
