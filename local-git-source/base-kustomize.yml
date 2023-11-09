@@ -3,6 +3,7 @@ kind: ApplicationConfiguration
 metadata:
   name: base-kustomize
 spec:
+  priority: 0
   applicationSourceSelector:
     matchLabels:
       app: kustomize-app

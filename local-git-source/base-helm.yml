@@ -3,6 +3,7 @@ kind: ApplicationConfiguration
 metadata:
   name: base-helm
 spec:
+  priority: 0
   applicationSourceSelector:
     matchLabels:
       app: helm-app
