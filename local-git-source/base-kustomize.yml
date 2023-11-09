@@ -1,0 +1,15 @@
+apiVersion: csdp.codefresh.io/v1
+kind: ApplicationConfiguration
+metadata:
+  name: base-kustomize
+spec:
+  applicationSourceSelector:
+    matchLabel:
+      app: kustomize-app
+  versionSource:
+    file: kustomization.yaml
+    jsonPath: $.images[?(@.name=="my-org/my-service")].newTag
+  promotion:
+  - file: kustomization.yaml
+    jsonPaths:
+    - $.images.newTag

@@ -1,0 +1,23 @@
+apiVersion: csdp.codefresh.io/v1
+kind: ApplicationConfiguration
+metadata:
+  name: base-helm
+spec:
+  applicationSourceSelector:
+    matchLabels:
+      app: helm-app
+  versionSource:
+    file: Chart.yaml
+    jsonPath: appVersion
+  promotion:
+  - file: Chart.yaml
+    jsonPaths:
+    - $.appVersion
+    - $.version
+    - $.dependencies
+  - file: values.yaml
+    jsonPaths:
+    - $..image
+  - file: requirements.yaml
+    jsonPaths:
+    - "$.dependencies"
