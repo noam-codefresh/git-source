@@ -3,14 +3,13 @@ kind: ApplicationConfiguration
 metadata:
   name: base-kustomize
 spec:
-  priority: 0
   applicationSourceSelector:
     matchLabels:
       app: kustomize-app
+  priority: 0
   versionSource:
     file: kustomization.yaml
     jsonPath: $.images[?(@.name=="my-org/my-service")].newTag
   promotion:
-  - file: kustomization.yaml
-    jsonPaths:
+    kustomization.yaml:
     - $.images.newTag

@@ -3,17 +3,15 @@ kind: ApplicationConfiguration
 metadata:
   name: some-vanilla
 spec:
-  priority: 0
   applicationSourceSelector:
     matchLabels:
       app: sample-app
+  priority: 0
   versionSource:
     file: backend.yaml
     jsonPath: $.spec.template.spec.containers[?(@.name=="my-container")].image
   promotion:
-  - file: backend.yaml
-    jsonPaths:
+    backend.yaml:
     - $.spec.template.spec.containers..image
-  - file: frontend.yaml
-    jsonPaths:
+    frontend.yaml:
     - $.spec.template.spec.containers..image

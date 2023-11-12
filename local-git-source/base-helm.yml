@@ -3,22 +3,19 @@ kind: ApplicationConfiguration
 metadata:
   name: base-helm
 spec:
-  priority: 0
   applicationSourceSelector:
     matchLabels:
       app: helm-app
+  priority: 0
   versionSource:
     file: Chart.yaml
     jsonPath: appVersion
   promotion:
-  - file: Chart.yaml
-    jsonPaths:
+    chart.yaml:
     - $.appVersion
     - $.version
     - $.dependencies
-  - file: values.yaml
-    jsonPaths:
+    values.yaml:
     - $..image
-  - file: requirements.yaml
-    jsonPaths:
+    requirements.yaml:
     - "$.dependencies"
