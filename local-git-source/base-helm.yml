@@ -12,10 +12,13 @@ spec:
     jsonPath: appVersion
   promotion:
     chart.yaml:
-    - $.appVersion
-    - $.version
-    - $.dependencies
+      jsonPaths:
+      - $.appVersion
+      - $.version
+      - $.dependencies
     values.yaml:
-    - $..image
+      jsonPaths:
+      - $..image
     requirements.yaml:
-    - "$.dependencies"
+      jsonPaths:
+      - "$.dependencies"

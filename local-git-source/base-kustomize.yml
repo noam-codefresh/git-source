@@ -12,4 +12,5 @@ spec:
     jsonPath: $.images[?(@.name=="my-org/my-service")].newTag
   promotion:
     kustomization.yaml:
-    - $.images.newTag
+      jsonPaths:
+      - $.images.newTag
