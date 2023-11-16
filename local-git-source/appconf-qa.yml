@@ -1,0 +1,13 @@
+apiVersion: csdp.codefresh.io/v1
+kind: ApplicationConfiguration
+metadata:
+  name: loans-base
+spec:
+  applicationSourceSelector:
+    matchLabels:
+      env: qa
+  priority: 20
+  promotion:
+    for-qa:
+      jsonPaths:
+        - something
