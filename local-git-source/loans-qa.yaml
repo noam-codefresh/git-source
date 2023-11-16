@@ -4,10 +4,9 @@ metadata:
   name: loans-qa
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
-  annotations:
-    codefresh.io/product: loans
   labels:
     app: loans
+    codefresh.io/product: loans
     env: qa
 spec:
   project: default
