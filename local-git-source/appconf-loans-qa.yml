@@ -9,6 +9,6 @@ spec:
       env: qa
   priority: 30
   promotion:
-    for-loans-qa:
+    for-loans-qa.yaml:
       jsonPaths:
         - something

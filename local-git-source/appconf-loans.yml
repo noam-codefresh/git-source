@@ -8,6 +8,6 @@ spec:
       app: loans
   priority: 10
   promotion:
-    for-loans:
+    for-loans.yaml:
       jsonPaths:
         - something

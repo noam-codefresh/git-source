@@ -8,6 +8,6 @@ spec:
       env: qa
   priority: 20
   promotion:
-    for-qa:
+    for-qa.yaml:
       jsonPaths:
         - something
