@@ -4,8 +4,10 @@ metadata:
   name: loans-production
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
-  annotations:
+  labels:
+    app: loans
     codefresh.io/product: loans
+    env: production
 spec:
   project: default
   source:
