@@ -10,13 +10,20 @@ spec:
         value: ''
       - name: revision
         value: ''
+  entrypoint: argosay
   templates:
-    - name: whalesay
+    - name: argosay
       inputs:
         parameters:
-          - name: appName
-          - name: revision
+          - name: message
+            value: 'promoted {{workflow.parameters.appName}} to {{workflow.parameters.revision}}'
       container:
-        image: docker/whalesay
-        command: [cowsay]
-        args: ["{{inputs.parameters.appName}}#{{inputs.paramters.revision}}"]
+        name: main
+        image: argoproj/argosay:v2
+        command:
+          - /argosay
+        args:
+          - echo
+          - '{{inputs.parameters.message}}'
+  ttlStrategy:
+    secondsAfterCompletion: 300
