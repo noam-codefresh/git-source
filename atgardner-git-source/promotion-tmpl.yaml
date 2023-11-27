@@ -1,0 +1,22 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: promotion-workflow
+spec:
+  arguments:
+    parameters:
+      - name: appName
+        value: ''
+      - name: revision
+        value: ''
+  templates:
+    - name: whalesay
+      inputs:
+        parameters:
+          - name: appName
+          - name: revision
+      container:
+        image: docker/whalesay
+        command: [cowsay]
+        args: ["{{inputs.parameters.appName}}#{{inputs.paramters.revision}}"]
