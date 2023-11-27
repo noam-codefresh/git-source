@@ -16,7 +16,7 @@ spec:
       inputs:
         parameters:
           - name: message
-            value: 'promoted {{workflow.parameters.appName}} to {{workflow.parameters.revision}}'
+            value: 'promoted {{workflow.parameters.appName}} to {{workflow.parameters.appRevision}}'
       container:
         name: main
         image: argoproj/argosay:v2
