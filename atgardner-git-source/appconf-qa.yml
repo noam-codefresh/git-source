@@ -10,4 +10,4 @@ spec:
   promotion:
     for-qa.yaml:
       jsonPaths:
-        - something-else-zxc
+        - something-else
