@@ -1,13 +1,13 @@
-apiVersion: csdp.codefresh.io/v1
-kind: ApplicationConfiguration
-metadata:
-  name: loans
-spec:
-  applicationSourceSelector:
-    matchLabels:
-      app: loans
-  priority: 10
-  promotion:
-    for-loans.yaml:
-      jsonPaths:
-        - server.env.SESSION_INTERVAL
+# apiVersion: csdp.codefresh.io/v1
+# kind: ApplicationConfiguration
+# metadata:
+#   name: loans
+# spec:
+#   applicationSourceSelector:
+#     matchLabels:
+#       app: loans
+#   priority: 10
+#   promotion:
+#     for-loans.yaml:
+#       jsonPaths:
+#         - server.env.SESSION_INTERVAL
