@@ -1,25 +1,25 @@
-apiVersion: csdp.codefresh.io/v1
-kind: ApplicationConfiguration
-metadata:
-  name: base-helm
-spec:
-  applicationSourceSelector:
-    matchExpressions:
-    - key: codefresh.io/product
-      operator: Exists
-  priority: 0
-  versionSource:
-    file: Chart.yaml
-    jsonPath: appVersion
-  promotion:
-    chart.yaml:
-      jsonPaths:
-      - $.appVersion
-      - $.version
-      - $.dependencies
-    values.yaml:
-      jsonPaths:
-      - $..image
-    requirements.yaml:
-      jsonPaths:
-      - "$.dependencies"
+# apiVersion: csdp.codefresh.io/v1
+# kind: ApplicationConfiguration
+# metadata:
+#   name: base-helm
+# spec:
+#   applicationSourceSelector:
+#     matchExpressions:
+#     - key: codefresh.io/product
+#       operator: Exists
+#   priority: 0
+#   versionSource:
+#     file: Chart.yaml
+#     jsonPath: appVersion
+#   promotion:
+#     chart.yaml:
+#       jsonPaths:
+#       - $.appVersion
+#       - $.version
+#       - $.dependencies
+#     values.yaml:
+#       jsonPaths:
+#       - $..image
+#     requirements.yaml:
+#       jsonPaths:
+#       - "$.dependencies"

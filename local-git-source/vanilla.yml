@@ -1,19 +1,19 @@
-apiVersion: csdp.codefresh.io/v1
-kind: ApplicationConfiguration
-metadata:
-  name: vanilla
-spec:
-  applicationSourceSelector:
-    matchLabels:
-      app: sample-app
-  priority: 0
-  versionSource:
-    file: backend.yaml
-    jsonPath: $.spec.template.spec.containers[?(@.name=="my-container")].image
-  promotion:
-    backend.yaml:
-      jsonPaths:
-      - $.spec.template.spec.containers..image
-    frontend.yaml:
-      jsonPaths:
-      - $.spec.template.spec.containers..image
+# apiVersion: csdp.codefresh.io/v1
+# kind: ApplicationConfiguration
+# metadata:
+#   name: vanilla
+# spec:
+#   applicationSourceSelector:
+#     matchLabels:
+#       app: sample-app
+#   priority: 0
+#   versionSource:
+#     file: backend.yaml
+#     jsonPath: $.spec.template.spec.containers[?(@.name=="my-container")].image
+#   promotion:
+#     backend.yaml:
+#       jsonPaths:
+#       - $.spec.template.spec.containers..image
+#     frontend.yaml:
+#       jsonPaths:
+#       - $.spec.template.spec.containers..image
