@@ -1,15 +1,15 @@
-# apiVersion: csdp.codefresh.io/v1
-# kind: ApplicationConfiguration
-# metadata:
-#   name: loans-non-prod
-# spec:
-#   applicationSourceSelector:
-#     matchExpressions:
-#     - key: env
-#       operator: NotIn
-#       values:
-#       - production
-#   priority: 5
-#   versionSource:
-#     file: Chart.yaml
-#     jsonPath: appVersion2
+apiVersion: csdp.codefresh.io/v1
+kind: ApplicationConfiguration
+metadata:
+  name: loans-non-prod
+spec:
+  applicationSourceSelector:
+    matchExpressions:
+    - key: env
+      operator: NotIn
+      values:
+      - production
+  priority: 5
+  versionSource:
+    file: Chart.yaml
+    jsonPath: appVersion2
