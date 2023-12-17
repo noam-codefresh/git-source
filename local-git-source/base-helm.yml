@@ -12,7 +12,7 @@
 #     file: Chart.yaml
 #     jsonPath: appVersion
 #   promotion:
-#     chart.yaml:
+#     Chart.yaml:
 #       jsonPaths:
 #       - $.appVersion
 #       - $.version
