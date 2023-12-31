@@ -1,0 +1,28 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: deployed-promotion-workflow
+spec:
+  arguments:
+    parameters:
+      - name: APP_NAME
+      - name: APP_NAMESPACE
+      - name: APP_REVISION
+  entrypoint: argosay
+  templates:
+    - name: argosay
+      inputs:
+        parameters:
+          - name: message
+            value: 'promoted {{workflow.parameters.APP_NAMESPACE}}/{{workflow.parameters.APP_NAME}} to {{workflow.parameters.APP_REVISION}}'
+      container:
+        name: main
+        image: argoproj/argosay:v2
+        command:
+          - /argosay
+        args:
+          - echo
+          - '{{inputs.parameters.message}}'
+  ttlStrategy:
+    secondsAfterCompletion: 300
