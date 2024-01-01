@@ -1,26 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: loans-staging
+  name: overwrite-namespace
+  namespace: runtime
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
-  labels:
-    app: loans
-    codefresh.io/product: loans
-    env: staging
 spec:
-  project: default
+  project: hulk-team
   source:
+    path: overwrite-namespace
     repoURL: https://github.com/noam-codefresh/git-source.git
-    targetRevision: staging
-    path: loans
+    targetRevision: HEAD
   destination:
     name: in-cluster
-    namespace: staging
+    namespace: hulk-team-zone
   syncPolicy:
-    # automated:
-    #   prune: true
-    #   selfHeal: false
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - PrunePropagationPolicy=foreground
       - Replace=false

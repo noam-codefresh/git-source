@@ -1,22 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: loans-qa
+  name: wrong-project
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
-  labels:
-    app: loans
-    codefresh.io/product: loans
-    env: qa
 spec:
-  project: default
+  project: default # <-- illeagal project
   source:
+    path: wrong-project
     repoURL: https://github.com/noam-codefresh/git-source.git
-    targetRevision: qa
-    path: loans
+    targetRevision: HEAD
   destination:
     name: in-cluster
-    namespace: qa
+    namespace: hulk-team-zone
   syncPolicy:
     automated:
       prune: true
