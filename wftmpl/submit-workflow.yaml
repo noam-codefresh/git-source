@@ -7,7 +7,7 @@ spec:
     parameters:
     - name: TEMPLATE_NAME
     - name: ENTRY_POINT
-      default: ""
+      value: ""
     - name: ARGS
   entrypoint: submit
   templates:
