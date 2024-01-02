@@ -16,13 +16,13 @@ spec:
   - name: main
     steps:
     - - name: pre-sync
-        when: "'{{ workflow.parameters.PRE_SYNC_WORKFLOW }}' != ''"
+        when: '"{{ workflow.parameters.PRE_SYNC_WORKFLOW }}" != ""'
         arguments:
           parameters:
           - name: TEMPLATE_NAME
-            value: "{{ workflow.parameters.PRE_SYNC_WORKFLOW }}"
+            value: '{{ workflow.parameters.PRE_SYNC_WORKFLOW }}'
           - name: ARGS
-            value: "{{ workflow.parameters.ARGS }}"
+            value: '{{ workflow.parameters.ARGS }}'
         templateRef:
           name: submit-workflow
           template: submit
@@ -31,11 +31,11 @@ spec:
         arguments:
           parameters:
           - name: app
-            value: "{{ workflow.parameters.APP_NAME }}"
+            value: '{{ workflow.parameters.APP_NAME }}'
           - name: flags
             value: --prune --timeout 120
           - name: serverUrl
-            value: "{{ workflow.parameters.ARGOCD_SERVER_URL }}"
+            value: '{{ workflow.parameters.ARGOCD_SERVER_URL }}'
           - name: opts
             value: --grpc-web --plaintext
           - name: tokenSecret
@@ -50,11 +50,11 @@ spec:
         arguments:
           parameters:
           - name: app
-            value: "{{workflow.parameters.APP_NAME}}"
+            value: '{{workflow.parameters.APP_NAME}}'
           - name: flags
             value: --health --timeout 120
           - name: serverUrl
-            value: "{{ workflow.parameters.ARGOCD_SERVER_URL }}"
+            value: '{{ workflow.parameters.ARGOCD_SERVER_URL }}'
           - name: opts
             value: --grpc-web --plaintext
           - name: tokenSecret
@@ -66,13 +66,13 @@ spec:
           template: wait
 
     - - name: post-sync
-        when: "'{{ workflow.parameters.POST_SYNC_WORKFLOW }}' != ''"
+        when: '"{{ workflow.parameters.POST_SYNC_WORKFLOW }}" != ""'
         arguments:
           parameters:
           - name: TEMPLATE_NAME
-            value: "{{ workflow.parameters.POST_SYNC_WORKFLOW }}"
+            value: '{{ workflow.parameters.POST_SYNC_WORKFLOW }}'
           - name: ARGS
-            value: "{{ workflow.parameters.ARGS }}"
+            value: '{{ workflow.parameters.ARGS }}'
         templateRef:
           name: submit-workflow
           template: submit
