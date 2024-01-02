@@ -11,6 +11,7 @@ spec:
   templates:
   - name: echo
     script:
+      image: alpine
       command:
       - sh
       source: |
