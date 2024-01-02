@@ -18,4 +18,4 @@ spec:
       command:
       - sh
       source: |
-        echo "syncing {{ workflow.parameters.PARAM_ONE }} to {{ workflow.parameters.PARAM_TWO}}, author: {{ workflow.parameters.COMMIT_AUTHOR }} "
+        echo "syncing {{ workflow.parameters.APP_NAME }} to {{ workflow.parameters.APP_REVISION }}, author: {{ workflow.parameters.COMMIT_AUTHOR }} "
