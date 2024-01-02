@@ -11,14 +11,14 @@ spec:
   templates:
   - name: main
     steps:
-    - name: post-sync
-      when: "{{ input.parameters.TEMPLATE_NAME }} != ''"
-      arguments:
-        parameters:
-        - name: TEMPLATE_NAME
-          value: "{{ workflow.parameters.POST_SYNC_WORKFLOW }}"
-        - name: ARGS
-          value: "{{ workflow.paremeters.ARGS }}"
-      templateRef:
-        template: submit
-        name: submit-workflow
+    - - name: post-sync
+        when: "{{ input.parameters.TEMPLATE_NAME }} != ''"
+        arguments:
+          parameters:
+          - name: TEMPLATE_NAME
+            value: "{{ workflow.parameters.POST_SYNC_WORKFLOW }}"
+          - name: ARGS
+            value: "{{ workflow.paremeters.ARGS }}"
+        templateRef:
+          template: submit
+          name: submit-workflow
