@@ -5,28 +5,28 @@ metadata:
 spec:
   arguments:
     parameters:
-      - name: TEMPLATE_NAME
-      - name: ENTRY_POINT
-      - name: ARGS
+    - name: TEMPLATE_NAME
+    - name: ENTRY_POINT
+    - name: ARGS
   entrypoint: submit
   templates:
-    - name: submit
-      serviceAccountName: argo-workflow-controller
-      outputs:
-        parameters:
-          - name: output
-            valueFrom:
-              path: /output.json
-      script:
-        name: main
-        image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
-        command:
-          - sh
-        source: |
-          echo {{ workflow.parameters.ARGS }} > params.json
-          echo $(argo submit \
-            --from wftmpl/{{ workflow.parameters.TEMPLATE_NAME }} \
-            --entrypoint {{ workflow.parameters.ENTRY_POINT }} \
-            --parameter-file params.json \
-            --labels codefresh.io/submit-wf-parent-uid={{ workflow.uid }} \
-            --output=json) > output.json
+  - name: submit
+    serviceAccountName: argo-workflow-controller
+    outputs:
+      parameters:
+      - name: output
+        valueFrom:
+          path: /output.json
+    script:
+      name: main
+      image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
+      command:
+      - sh
+      source: |
+        echo {{ workflow.parameters.ARGS }} > params.json
+        echo $(argo submit \
+          --from wftmpl/{{ workflow.parameters.TEMPLATE_NAME }} \
+          --entrypoint {{ workflow.parameters.ENTRY_POINT }} \
+          --parameter-file params.json \
+          --labels codefresh.io/submit-wf-parent-uid={{ workflow.uid }} \
+          --output=json) > output.json

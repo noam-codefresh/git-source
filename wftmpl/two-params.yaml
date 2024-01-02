@@ -7,14 +7,10 @@ spec:
     parameters:
       - name: PARAM_ONE
       - name: PARAM_TWO
-  entrypoint: submit
+  entrypoint: echo
   templates:
-    - name: submit
+    - name: echo
       serviceAccountName: argo-server
-      inputs:
-        parameters:
-          - name: PARAM_ONE
-          - name: PARAM_TWO
       script:
         name: main
         image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
@@ -22,4 +18,4 @@ spec:
         command:
           - sh
         source: |
-          echo "one: {{ inputs.parameters.PARAM_ONE }}, two: {{ inputs.parameters.PARAM_TWO}}"
+          echo "one: {{ workflow.parameters.PARAM_ONE }}, two: {{ workflow.parameters.PARAM_TWO}}"

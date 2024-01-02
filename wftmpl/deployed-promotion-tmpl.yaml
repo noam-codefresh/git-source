@@ -5,20 +5,20 @@ metadata:
   labels:
     codefresh.io/promotion: 'true'
 spec:
+  entrypoint: post-sync
   arguments:
     parameters:
     - name: POST_SYNC_WORKFLOW
     - name: ARGS
-  entrypoint: post-sync
   templates:
   - name: post-sync
-    when: "{{ workflow.parameters.POST_SYNC_WORKFLOW }} != ''"
+    when: "{{ input.parameters.TEMPLATE_NAME }} != ''"
     arguments:
       parameters:
       - name: TEMPLATE_NAME
-        value: {{ workflow.parameters.POST_SYNC_WORKFLOW }}
+        value: "{{ workflow.parameters.POST_SYNC_WORKFLOW }}"
       - name: ARGS
-        value: {{ workflow.parameters.ARGS }}
+        value: "{{ workflow.paremeters.ARGS }}"
     templateRef:
       name: submit-workflow
       template: submit

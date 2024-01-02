@@ -22,9 +22,9 @@ spec:
       arguments:
         parameters:
         - name: TEMPLATE_NAME
-          value: {{ workflow.parameters.PRE_SYNC_WORKFLOW }}
+          value: "{{ workflow.parameters.PRE_SYNC_WORKFLOW }}"
         - name: ARGS
-          value: {{ workflow.parameters.ARGS }}
+          value: "{{ workflow.parameters.ARGS }}"
       templateRef:
         name: submit-workflow
         template: submit
@@ -72,9 +72,9 @@ spec:
       arguments:
         parameters:
         - name: TEMPLATE_NAME
-          value: {{ workflow.parameters.POST_SYNC_WORKFLOW }}
+          value: "{{ workflow.parameters.POST_SYNC_WORKFLOW }}"
         - name: ARGS
-          value: {{ workflow.parameters.ARGS }}
+          value: "{{ workflow.parameters.ARGS }}"
       templateRef:
         name: submit-workflow
         template: submit
