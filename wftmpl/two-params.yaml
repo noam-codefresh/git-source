@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: two-params
+spec:
+  arguments:
+    parameters:
+      - name: PARAM_ONE
+      - name: PARAM_TWO
+  entrypoint: submit
+  templates:
+    - name: submit
+      serviceAccountName: argo-server
+      inputs:
+        parameters:
+          - name: PARAM_ONE
+          - name: PARAM_TWO
+      script:
+        name: main
+        image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
+        imagePullPolicy: Always
+        command:
+          - sh
+        source: |
+          echo "one: {{ inputs.parameters.PARAM_ONE }}, two: {{ inputs.parameters.PARAM_TWO}}"

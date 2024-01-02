@@ -1,28 +1,80 @@
-
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: out-of-sync-promotion-workflow
+  name: out-of-sync-promotion-tmpl
+  labels:
+    codefresh.io/promotion: 'true'
 spec:
   arguments:
     parameters:
-      - name: APP_NAME
-      - name: APP_NAMESPACE
-      - name: APP_REVISION
-  entrypoint: argosay
+    - name: APP_NAME
+    - name: APP_NAMESPACE
+    - name: ARGOCD_SERVER_URL
+    - name: PRE_SYNC_WORKFLOW
+    - name: POST_SYNC_WORKFLOW
+    - name: ARGS
+  entrypoint: main
   templates:
-    - name: argosay
-      inputs:
+  - name: main
+    steps:
+    - name: pre-sync
+      when: "{{ workflow.parameters.PRE_SYNC_WORKFLOW }} != ''"
+      arguments:
         parameters:
-          - name: message
-            value: 'out-of-sync {{workflow.parameters.APP_NAMESPACE}}/{{workflow.parameters.APP_NAME}} to {{workflow.parameters.APP_REVISION}}'
-      container:
-        name: main
-        image: argoproj/argosay:v2
-        command:
-          - /argosay
-        args:
-          - echo
-          - '{{inputs.parameters.message}}'
-  ttlStrategy:
-    secondsAfterCompletion: 300
+        - name: TEMPLATE_NAME
+          value: {{ workflow.parameters.PRE_SYNC_WORKFLOW }}
+        - name: ARGS
+          value: {{ workflow.parameters.ARGS }}
+      templateRef:
+        name: submit-workflow
+        template: submit
+
+    - name: sync
+      arguments:
+        parameters:
+        - name: app
+          value: "{{ workflow.parameters.APP_NAME }}"
+        - name: flags
+          value: --prune --timeout 120
+        - name: serverUrl
+          value: "{{ workflow.parameters.ARGOCD_SERVER_URL }}"
+        - name: opts
+          value: --grpc-web --plaintext
+        - name: tokenSecret
+          value: argocd-token
+        - name: tokenSecretKey
+          value: token
+      templateRef:
+        name: argo-hub.argocd.0.0.1
+        template: sync
+
+    - name: wait
+      arguments:
+        parameters:
+        - name: app
+          value: "{{workflow.parameters.APP_NAME}}"
+        - name: flags
+          value: --health --timeout 120
+        - name: serverUrl
+          value: "{{ workflow.parameters.ARGOCD_SERVER_URL }}"
+        - name: opts
+          value: --grpc-web --plaintext
+        - name: tokenSecret
+          value: argocd-token
+        - name: tokenSecretKey
+          value: token
+      templateRef:
+        name: argo-hub.argocd.0.0.1
+        template: wait
+
+    - name: post-sync
+      when: "{{ workflow.parameters.POST_SYNC_WORKFLOW }} != ''"
+      arguments:
+        parameters:
+        - name: TEMPLATE_NAME
+          value: {{ workflow.parameters.POST_SYNC_WORKFLOW }}
+        - name: ARGS
+          value: {{ workflow.parameters.ARGS }}
+      templateRef:
+        name: submit-workflow
+        template: submit
