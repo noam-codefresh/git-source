@@ -11,6 +11,10 @@ spec:
   templates:
   - name: submit
     serviceAccountName: argo-workflow-controller
+    inputs:
+      parameters:
+      - name: TEMPLATE_NAME
+      - name: ARGS
     outputs:
       parameters:
       - name: output
@@ -22,9 +26,9 @@ spec:
       command:
       - sh
       source: |
-        echo {{ workflow.parameters.ARGS }} > params.json
+        echo {{ inputs.parameters.ARGS }} > params.json
         echo $(argo submit \
-          --from wftmpl/{{ workflow.parameters.TEMPLATE_NAME }} \
+          --from wftmpl/{{ inputs.parameters.TEMPLATE_NAME }} \
           --parameter-file params.json \
           --labels codefresh.io/submit-wf-parent-uid={{ workflow.uid }} \
           --output=json) > output.json

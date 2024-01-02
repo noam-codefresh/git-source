@@ -20,5 +20,5 @@ spec:
           - name: ARGS
             value: "{{ workflow.paremeters.ARGS }}"
         templateRef:
-          template: submit
           name: submit-workflow
+          template: submit
