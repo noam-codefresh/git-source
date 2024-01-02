@@ -12,7 +12,7 @@ spec:
   - name: main
     steps:
     - - name: post-sync
-        when: "{{ input.parameters.TEMPLATE_NAME }} != ''"
+        when: "{{ workflow.parameters.TEMPLATE_NAME }} != ''"
         arguments:
           parameters:
           - name: TEMPLATE_NAME
