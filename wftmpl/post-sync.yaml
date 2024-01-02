@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: post-sync
+  labels:
+    codefresh.io/promotion: ‘true’
+spec:
+  arguments:
+    parameters:
+    - name: APP_NAME
+    - name: APP_REVISION
+  entrypoint: echo
+  templates:
+  - name: echo
+    script:
+      image: alpine
+      command:
+      - sh
+      source: |
+        echo "synced app {{ workflow.parameters.APP_NAME }} to {{ workflow.parameters.APP_REVISION}}"

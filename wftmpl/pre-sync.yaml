@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: pre-sync
+  labels:
+    codefresh.io/promotion: ‘true’
+spec:
+  arguments:
+    parameters:
+    - name: APP_NAME
+    - name: APP_REVISION
+    - name: COMMIT_AUTHOR
+  entrypoint: echo
+  templates:
+  - name: echo
+    script:
+      image: alpine
+      command:
+      - sh
+      source: |
+        echo "syncing {{ workflow.parameters.PARAM_ONE }} to {{ workflow.parameters.PARAM_TWO}}, author: {{ workflow.parameters.COMMIT_AUTHOR }} "
