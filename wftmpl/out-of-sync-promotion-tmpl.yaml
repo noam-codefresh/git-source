@@ -16,7 +16,7 @@ spec:
   - name: main
     steps:
     - - name: pre-sync
-        when: "{{ workflow.parameters.PRE_SYNC_WORKFLOW }} != ''"
+        when: "'{{ workflow.parameters.PRE_SYNC_WORKFLOW }}' != ''"
         arguments:
           parameters:
           - name: TEMPLATE_NAME
@@ -66,7 +66,7 @@ spec:
           template: wait
 
     - - name: post-sync
-        when: "{{ workflow.parameters.POST_SYNC_WORKFLOW }} != ''"
+        when: "'{{ workflow.parameters.POST_SYNC_WORKFLOW }}' != ''"
         arguments:
           parameters:
           - name: TEMPLATE_NAME
