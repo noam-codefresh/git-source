@@ -3,7 +3,7 @@ kind: WorkflowTemplate
 metadata:
   name: post-sync
   labels:
-    codefresh.io/promotion: ‘true’
+    codefresh.io/promotion: 'true'
 spec:
   arguments:
     parameters:
