@@ -5,17 +5,13 @@ metadata:
 spec:
   arguments:
     parameters:
-      - name: PARAM_ONE
-      - name: PARAM_TWO
+    - name: PARAM_ONE
+    - name: PARAM_TWO
   entrypoint: echo
   templates:
-    - name: echo
-      serviceAccountName: argo-server
-      script:
-        name: main
-        image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
-        imagePullPolicy: Always
-        command:
-          - sh
-        source: |
-          echo "one: {{ workflow.parameters.PARAM_ONE }}, two: {{ workflow.parameters.PARAM_TWO}}"
+  - name: echo
+    script:
+      command:
+      - sh
+      source: |
+        echo "one: {{ workflow.parameters.PARAM_ONE }}, two: {{ workflow.parameters.PARAM_TWO}}"

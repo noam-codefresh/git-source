@@ -2,23 +2,23 @@ apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
   name: deployed-promotion-tmpl
-  labels:
-    codefresh.io/promotion: 'true'
 spec:
-  entrypoint: post-sync
+  entrypoint: main
   arguments:
     parameters:
     - name: POST_SYNC_WORKFLOW
     - name: ARGS
   templates:
-  - name: post-sync
-    when: "{{ input.parameters.TEMPLATE_NAME }} != ''"
-    arguments:
-      parameters:
-      - name: TEMPLATE_NAME
-        value: "{{ workflow.parameters.POST_SYNC_WORKFLOW }}"
-      - name: ARGS
-        value: "{{ workflow.paremeters.ARGS }}"
-    templateRef:
-      name: submit-workflow
-      template: submit
+  - name: main
+    steps:
+    - name: post-sync
+      when: "{{ input.parameters.TEMPLATE_NAME }} != ''"
+      arguments:
+        parameters:
+        - name: TEMPLATE_NAME
+          value: "{{ workflow.parameters.POST_SYNC_WORKFLOW }}"
+        - name: ARGS
+          value: "{{ workflow.paremeters.ARGS }}"
+      templateRef:
+        template: submit
+        name: submit-workflow

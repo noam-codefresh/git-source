@@ -2,9 +2,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
   name: out-of-sync-promotion-tmpl
-  labels:
-    codefresh.io/promotion: 'true'
 spec:
+  entrypoint: main
   arguments:
     parameters:
     - name: APP_NAME
@@ -13,7 +12,6 @@ spec:
     - name: PRE_SYNC_WORKFLOW
     - name: POST_SYNC_WORKFLOW
     - name: ARGS
-  entrypoint: main
   templates:
   - name: main
     steps:
