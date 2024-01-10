@@ -1,0 +1,201 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: promotion-templates
+spec:
+  workflowMetadata:
+    labels:
+      codefresh.io/promotion-wrapper: 'true'
+  templates:
+  - name: out-of-sync-promotion
+    arguments:
+      parameters:
+      - name: APP_NAME
+      - name: APP_NAMESPACE
+      - name: ARGOCD_HOST
+      - name: PRE_SYNC_WORKFLOW
+      - name: POST_SYNC_WORKFLOW
+      - name: ARGS
+    steps:
+    - - name: pre-sync
+        when: '"{{ workflow.parameters.PRE_SYNC_WORKFLOW }}" != ""'
+        template: submit-workflow
+        arguments:
+          parameters:
+          - name: TEMPLATE_NAME
+            value: '{{ workflow.parameters.PRE_SYNC_WORKFLOW }}'
+          - name: ARGS
+            value: '{{ workflow.parameters.ARGS }}'
+
+    - - name: sync
+        arguments:
+          parameters:
+          - name: app
+            value: '{{ workflow.parameters.APP_NAME }}'
+          - name: flags
+            value: --prune --timeout 120
+          - name: serverUrl
+            value: '{{ workflow.parameters.ARGOCD_HOST }}'
+          - name: opts
+            value: --grpc-web --plaintext
+          - name: tokenSecret
+            value: argocd-token
+          - name: tokenSecretKey
+            value: token
+        template: argocd-sync
+
+    - - name: wait
+        arguments:
+          parameters:
+          - name: app
+            value: '{{workflow.parameters.APP_NAME}}'
+          - name: flags
+            value: --health --timeout 120
+          - name: serverUrl
+            value: '{{ workflow.parameters.ARGOCD_HOST }}'
+          - name: opts
+            value: --grpc-web --plaintext
+          - name: tokenSecret
+            value: argocd-token
+          - name: tokenSecretKey
+            value: token
+        template: argocd-wait
+
+    - - name: post-sync
+        when: '"{{ workflow.parameters.POST_SYNC_WORKFLOW }}" != ""'
+        template: submit-workflow
+        arguments:
+          parameters:
+          - name: TEMPLATE_NAME
+            value: '{{ workflow.parameters.POST_SYNC_WORKFLOW }}'
+          - name: ARGS
+            value: '{{ workflow.parameters.ARGS }}'
+
+  - name: deployed-promotion
+    arguments:
+      parameters:
+      - name: POST_SYNC_WORKFLOW
+      - name: ARGS
+    steps:
+    - - name: post-sync
+        when: '"{{ workflow.parameters.POST_SYNC_WORKFLOW }}" != ""'
+        template: submit-workflow
+        arguments:
+          parameters:
+          - name: TEMPLATE_NAME
+            value: '{{ workflow.parameters.POST_SYNC_WORKFLOW }}'
+          - name: ARGS
+            value: '{{ workflow.parameters.ARGS }}'
+
+  - name: submit-workflow
+    # serviceAccountName: argo-hub.argo-workflows.0.0.4
+    metadata:
+      annotations:
+        argo-hub-template/description: A wrapper on top of argo cli submit operation
+        argo-hub-template/icon_background: '#f4f4f4'
+        argo-hub-template/icon_url: https://cdn.jsdelivr.net/gh/codefresh-io/argo-hub@main/workflows/argo-workflows/assets/icon.svg
+    inputs:
+      parameters:
+      - name: TEMPLATE_NAME
+      - name: ARGS
+    outputs:
+      parameters:
+      - name: output
+        valueFrom:
+          path: /output.json
+    script:
+      name: submit
+      image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
+      command:
+      - sh
+      source: |
+        echo {{ inputs.parameters.ARGS }} > params.json
+        echo $(argo submit \
+          --from wftmpl/{{ inputs.parameters.TEMPLATE_NAME }} \
+          --parameter-file params.json \
+          --labels codefresh.io/submit-wf-parent-uid={{ workflow.uid }} \
+          --output=json) > output.json
+
+  - name: argocd-sync
+    # serviceAccountName: argo-hub.argocd.0.0.1
+    metadata:
+      annotations:
+        argo-hub-template/description: Sync an application in ArgoCD
+        argo-hub-template/icon_background: "#f4f4f4"
+        argo-hub-template/icon_url: https://cdn.jsdelivr.net/gh/codefresh-io/argo-hub@main/workflows/argocd/assets/icon.svg
+    inputs:
+      parameters:
+      - name: app
+      - name: flags
+        default: ""
+      - name: serverUrl
+      - name: opts
+        default: ""
+      - name: tokenSecret
+        default: argocd-token
+      - name: tokenSecretKey
+        default: token
+      - name: xtraceOption
+        default: -o
+    container:
+      name: sync
+      image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
+      env:
+      - name: ARGOCD_SERVER
+        value: "{{inputs.parameters.serverUrl}}"
+      - name: ARGOCD_AUTH_TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: "{{inputs.parameters.tokenSecretKey}}"
+            name: "{{inputs.parameters.tokenSecret}}"
+      - name: ARGOCD_OPTS
+        value: "{{inputs.parameters.opts}}"
+      command:
+      - sh
+      - "{{inputs.parameters.xtraceOption}}"
+      - xtrace
+      - -c
+      args:
+      - argocd app sync {{inputs.parameters.app}} {{inputs.parameters.flags}}
+
+  - name: argocd-wait
+    # serviceAccountName: argo-hub.argocd.0.0.1
+    metadata:
+      annotations:
+        argo-hub-template/description: Sync an application in ArgoCD
+        argo-hub-template/icon_background: "#f4f4f4"
+        argo-hub-template/icon_url: https://cdn.jsdelivr.net/gh/codefresh-io/argo-hub@main/workflows/argocd/assets/icon.svg
+    inputs:
+      parameters:
+      - name: app
+      - name: flags
+        default: ""
+      - name: serverUrl
+      - name: opts
+        default: ""
+      - name: tokenSecret
+        default: argocd-token
+      - name: tokenSecretKey
+        default: token
+      - name: xtraceOption
+        default: -o
+    container:
+      name: wait
+      image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
+      env:
+      - name: ARGOCD_SERVER
+        value: "{{inputs.parameters.serverUrl}}"
+      - name: ARGOCD_AUTH_TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: "{{inputs.parameters.tokenSecretKey}}"
+            name: "{{inputs.parameters.tokenSecret}}"
+      - name: ARGOCD_OPTS
+        value: "{{inputs.parameters.opts}}"
+      command:
+      - sh
+      - "{{inputs.parameters.xtraceOption}}"
+      - xtrace
+      - -c
+      args:
+      - argocd app wait {{inputs.parameters.app}} {{inputs.parameters.flags}}
