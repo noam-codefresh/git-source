@@ -5,9 +5,9 @@ metadata:
 spec:
   workflowMetadata:
     labels:
-      codefresh.io/promotion-wrapper: 'true'
+      codefresh.io/workflow-type: 'promotion-wrapper'
   templates:
-  - name: out-of-sync-promotion
+  - name: manual-sync-promotion
     arguments:
       parameters:
       - name: APP_NAME
@@ -71,7 +71,7 @@ spec:
           - name: ARGS
             value: '{{ workflow.parameters.ARGS }}'
 
-  - name: deployed-promotion
+  - name: auto-sync-promotion
     arguments:
       parameters:
       - name: POST_SYNC_WORKFLOW
@@ -89,11 +89,6 @@ spec:
 
   - name: submit-workflow
     # serviceAccountName: argo-hub.argo-workflows.0.0.4
-    metadata:
-      annotations:
-        argo-hub-template/description: A wrapper on top of argo cli submit operation
-        argo-hub-template/icon_background: '#f4f4f4'
-        argo-hub-template/icon_url: https://cdn.jsdelivr.net/gh/codefresh-io/argo-hub@main/workflows/argo-workflows/assets/icon.svg
     inputs:
       parameters:
       - name: TEMPLATE_NAME
@@ -118,11 +113,6 @@ spec:
 
   - name: argocd-sync
     # serviceAccountName: argo-hub.argocd.0.0.1
-    metadata:
-      annotations:
-        argo-hub-template/description: Sync an application in ArgoCD
-        argo-hub-template/icon_background: "#f4f4f4"
-        argo-hub-template/icon_url: https://cdn.jsdelivr.net/gh/codefresh-io/argo-hub@main/workflows/argocd/assets/icon.svg
     inputs:
       parameters:
       - name: app
@@ -160,11 +150,6 @@ spec:
 
   - name: argocd-wait
     # serviceAccountName: argo-hub.argocd.0.0.1
-    metadata:
-      annotations:
-        argo-hub-template/description: Sync an application in ArgoCD
-        argo-hub-template/icon_background: "#f4f4f4"
-        argo-hub-template/icon_url: https://cdn.jsdelivr.net/gh/codefresh-io/argo-hub@main/workflows/argocd/assets/icon.svg
     inputs:
       parameters:
       - name: app

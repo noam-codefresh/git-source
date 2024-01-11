@@ -8,7 +8,7 @@ spec:
     parameters:
     - name: APP_NAME
     - name: APP_NAMESPACE
-    - name: ARGOCD_SERVER_URL
+    - name: ARGOCD_HOST
     - name: PRE_SYNC_WORKFLOW
     - name: POST_SYNC_WORKFLOW
     - name: ARGS
@@ -35,7 +35,7 @@ spec:
           - name: flags
             value: --prune --timeout 120
           - name: serverUrl
-            value: '{{ workflow.parameters.ARGOCD_SERVER_URL }}'
+            value: '{{ workflow.parameters.ARGOCD_HOST }}'
           - name: opts
             value: --grpc-web --plaintext
           - name: tokenSecret
@@ -54,7 +54,7 @@ spec:
           - name: flags
             value: --health --timeout 120
           - name: serverUrl
-            value: '{{ workflow.parameters.ARGOCD_SERVER_URL }}'
+            value: '{{ workflow.parameters.ARGOCD_HOST }}'
           - name: opts
             value: --grpc-web --plaintext
           - name: tokenSecret
