@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: deployed-promotion-tmpl
+  name: deployed-promotion-workflow
 spec:
   entrypoint: main
   arguments:
