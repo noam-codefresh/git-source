@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: loans-production
+  name: loans-production-east
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
   labels:
@@ -12,11 +12,11 @@ spec:
   project: default
   source:
     repoURL: https://github.com/noam-codefresh/git-source.git
-    targetRevision: production
+    targetRevision: production-east
     path: loans
   destination:
     name: in-cluster
-    namespace: production
+    namespace: production-east
   syncPolicy:
     automated:
       prune: true

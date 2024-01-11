@@ -3,39 +3,49 @@ kind: WorkflowTemplate
 metadata:
   name: promotion-templates
 spec:
-  workflowMetadata:
-    labels:
-      codefresh.io/workflow-type: 'promotion-wrapper'
+  arguments:
+    parameters:
+    - name: APP_NAME
+    - name: APP_NAMESPACE
+    - name: APP_REVISION
   templates:
   - name: manual-sync-promotion
-    arguments:
+    metadata:
+      annotations:
+        codefresh.io/workflow-origin: 'promotion-wrapper'
+    inputs:
       parameters:
       - name: APP_NAME
+        value: {{ workflow.parameters.APP_NAME }}
       - name: APP_NAMESPACE
+        value: {{ workflow.parameters.APP_NAMESPACE }}
       - name: ARGOCD_HOST
       - name: PRE_SYNC_WORKFLOW
+        default: ""      
       - name: POST_SYNC_WORKFLOW
+        default: ""
       - name: ARGS
+        default: ""
     steps:
     - - name: pre-sync
-        when: '"{{ workflow.parameters.PRE_SYNC_WORKFLOW }}" != ""'
+        when: '"{{ inputs.parameters.PRE_SYNC_WORKFLOW }}" != ""'
         template: submit-workflow
         arguments:
           parameters:
           - name: TEMPLATE_NAME
-            value: '{{ workflow.parameters.PRE_SYNC_WORKFLOW }}'
+            value: '{{ inputs.parameters.PRE_SYNC_WORKFLOW }}'
           - name: ARGS
-            value: '{{ workflow.parameters.ARGS }}'
+            value: '{{ inputs.parameters.ARGS }}'
 
     - - name: sync
         arguments:
           parameters:
           - name: app
-            value: '{{ workflow.parameters.APP_NAME }}'
+            value: '{{ inputs.parameters.APP_NAME }}'
           - name: flags
             value: --prune --timeout 120
           - name: serverUrl
-            value: '{{ workflow.parameters.ARGOCD_HOST }}'
+            value: '{{ inputs.parameters.ARGOCD_HOST }}'
           - name: opts
             value: --grpc-web --plaintext
           - name: tokenSecret
@@ -48,11 +58,11 @@ spec:
         arguments:
           parameters:
           - name: app
-            value: '{{workflow.parameters.APP_NAME}}'
+            value: '{{inputs.parameters.APP_NAME}}'
           - name: flags
             value: --health --timeout 120
           - name: serverUrl
-            value: '{{ workflow.parameters.ARGOCD_HOST }}'
+            value: '{{ inputs.parameters.ARGOCD_HOST }}'
           - name: opts
             value: --grpc-web --plaintext
           - name: tokenSecret
@@ -62,33 +72,38 @@ spec:
         template: argocd-wait
 
     - - name: post-sync
-        when: '"{{ workflow.parameters.POST_SYNC_WORKFLOW }}" != ""'
+        when: '"{{ inputs.parameters.POST_SYNC_WORKFLOW }}" != ""'
         template: submit-workflow
         arguments:
           parameters:
           - name: TEMPLATE_NAME
-            value: '{{ workflow.parameters.POST_SYNC_WORKFLOW }}'
+            value: '{{ inputs.parameters.POST_SYNC_WORKFLOW }}'
           - name: ARGS
-            value: '{{ workflow.parameters.ARGS }}'
+            value: '{{ inputs.parameters.ARGS }}'
 
   - name: auto-sync-promotion
-    arguments:
+    metadata:
+      annotations:
+        codefresh.io/workflow-origin: 'promotion-wrapper'
+    inputs:
       parameters:
       - name: POST_SYNC_WORKFLOW
+        default: ""
       - name: ARGS
+        default: ""
     steps:
     - - name: post-sync
-        when: '"{{ workflow.parameters.POST_SYNC_WORKFLOW }}" != ""'
+        when: '"{{ inputs.parameters.POST_SYNC_WORKFLOW }}" != ""'
         template: submit-workflow
         arguments:
           parameters:
           - name: TEMPLATE_NAME
-            value: '{{ workflow.parameters.POST_SYNC_WORKFLOW }}'
+            value: '{{ inputs.parameters.POST_SYNC_WORKFLOW }}'
           - name: ARGS
-            value: '{{ workflow.parameters.ARGS }}'
+            value: '{{ inputs.parameters.ARGS }}'
 
   - name: submit-workflow
-    # serviceAccountName: argo-hub.argo-workflows.0.0.4
+    serviceAccountName: promotion-templates
     inputs:
       parameters:
       - name: TEMPLATE_NAME
@@ -109,10 +124,11 @@ spec:
           --from wftmpl/{{ inputs.parameters.TEMPLATE_NAME }} \
           --parameter-file params.json \
           --labels codefresh.io/submit-wf-parent-uid={{ workflow.uid }} \
+          --annotations codefresh.io/workflow-origin=promotion \
+          --wait \
           --output=json) > output.json
 
   - name: argocd-sync
-    # serviceAccountName: argo-hub.argocd.0.0.1
     inputs:
       parameters:
       - name: app
@@ -149,7 +165,6 @@ spec:
       - argocd app sync {{inputs.parameters.app}} {{inputs.parameters.flags}}
 
   - name: argocd-wait
-    # serviceAccountName: argo-hub.argocd.0.0.1
     inputs:
       parameters:
       - name: app
