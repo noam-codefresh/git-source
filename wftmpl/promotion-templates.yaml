@@ -6,20 +6,35 @@ spec:
   arguments:
     parameters:
     - name: APP_NAME
-    - name: APP_NAMESPACE
-    - name: APP_REVISION
+    - name: ARGOCD_HOST
+  hooks:
+    exit:
+      template: argocd-app-get
+      arguments:
+        parameters:
+        - name: APP
+          value: '{{ workflow.parameters.APP_NAME }}'
+        - name: FLAGS
+          value: -o json
+        - name: ARGOCD_SERVER
+          value: '{{ workflow.parameters.ARGOCD_HOST }}'
+        - name: OPTS
+          value: --grpc-web --plaintext
+        - name: TOKEN_SECRET
+          value: argocd-token
+        - name: TOKEN_SECRET_KEY
+          value: token
   templates:
   - name: manual-sync-promotion
     metadata:
-      annotations:
+      labels:
         codefresh.io/workflow-origin: 'promotion-wrapper'
     inputs:
       parameters:
       - name: APP_NAME
-        value: {{ workflow.parameters.APP_NAME }}
-      - name: APP_NAMESPACE
-        value: {{ workflow.parameters.APP_NAMESPACE }}
+        value: '{{ workflow.parameters.APP_NAME }}'
       - name: ARGOCD_HOST
+        value: '{{ workflow.parameters.ARGOCD_HOST }}'
       - name: PRE_SYNC_WORKFLOW
         default: ""      
       - name: POST_SYNC_WORKFLOW
@@ -40,34 +55,34 @@ spec:
     - - name: sync
         arguments:
           parameters:
-          - name: app
+          - name: APP
             value: '{{ inputs.parameters.APP_NAME }}'
-          - name: flags
+          - name: FLAGS
             value: --prune --timeout 120
-          - name: serverUrl
+          - name: ARGOCD_SERVER
             value: '{{ inputs.parameters.ARGOCD_HOST }}'
-          - name: opts
+          - name: OPTS
             value: --grpc-web --plaintext
-          - name: tokenSecret
+          - name: TOKEN_SECRET
             value: argocd-token
-          - name: tokenSecretKey
+          - name: TOKEN_SECRET_KEY
             value: token
         template: argocd-sync
 
     - - name: wait
         arguments:
           parameters:
-          - name: app
+          - name: APP
             value: '{{inputs.parameters.APP_NAME}}'
-          - name: flags
+          - name: FLAGS
             value: --health --timeout 120
-          - name: serverUrl
+          - name: ARGOCD_SERVER
             value: '{{ inputs.parameters.ARGOCD_HOST }}'
-          - name: opts
+          - name: OPTS
             value: --grpc-web --plaintext
-          - name: tokenSecret
+          - name: TOKEN_SECRET
             value: argocd-token
-          - name: tokenSecretKey
+          - name: TOKEN_SECRET_KEY
             value: token
         template: argocd-wait
 
@@ -83,10 +98,14 @@ spec:
 
   - name: auto-sync-promotion
     metadata:
-      annotations:
+      labels:
         codefresh.io/workflow-origin: 'promotion-wrapper'
     inputs:
       parameters:
+      - name: APP_NAME
+        value: '{{ workflow.parameters.APP_NAME }}'
+      - name: ARGOCD_HOST
+        value: '{{ workflow.parameters.ARGOCD_HOST }}'
       - name: POST_SYNC_WORKFLOW
         default: ""
       - name: ARGS
@@ -101,6 +120,8 @@ spec:
             value: '{{ inputs.parameters.POST_SYNC_WORKFLOW }}'
           - name: ARGS
             value: '{{ inputs.parameters.ARGS }}'
+        continueOn:
+          failed: true
 
   - name: submit-workflow
     serviceAccountName: promotion-templates
@@ -120,26 +141,28 @@ spec:
       - sh
       source: |
         echo {{ inputs.parameters.ARGS }} > params.json
-        echo $(argo submit \
+        OUTPUT=$(argo submit \
           --from wftmpl/{{ inputs.parameters.TEMPLATE_NAME }} \
           --parameter-file params.json \
-          --labels codefresh.io/submit-wf-parent-uid={{ workflow.uid }} \
-          --annotations codefresh.io/workflow-origin=promotion \
+          --labels codefresh.io/submit-wf-parent-uid={{ workflow.uid }},codefresh.io/workflow-origin=promotion \
           --wait \
-          --output=json) > output.json
+          --output=json)
+        ERROR_CODE=$?
+        echo ${OUTPUT} > output.json
+        exit ${ERROR_CODE}
 
   - name: argocd-sync
     inputs:
       parameters:
-      - name: app
-      - name: flags
+      - name: APP
+      - name: FLAGS
         default: ""
-      - name: serverUrl
-      - name: opts
+      - name: ARGOCD_SERVER
+      - name: OPTS
         default: ""
-      - name: tokenSecret
+      - name: TOKEN_SECRET
         default: argocd-token
-      - name: tokenSecretKey
+      - name: TOKEN_SECRET_KEY
         default: token
       - name: xtraceOption
         default: -o
@@ -148,34 +171,34 @@ spec:
       image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
       env:
       - name: ARGOCD_SERVER
-        value: "{{inputs.parameters.serverUrl}}"
+        value: "{{ inputs.parameters.ARGOCD_SERVER }}"
       - name: ARGOCD_AUTH_TOKEN
         valueFrom:
           secretKeyRef:
-            key: "{{inputs.parameters.tokenSecretKey}}"
-            name: "{{inputs.parameters.tokenSecret}}"
+            key: "{{ inputs.parameters.TOKEN_SECRET_KEY }}"
+            name: "{{ inputs.parameters.TOKEN_SECRET }}"
       - name: ARGOCD_OPTS
-        value: "{{inputs.parameters.opts}}"
+        value: "{{inputs.parameters.OPTS}}"
       command:
       - sh
       - "{{inputs.parameters.xtraceOption}}"
       - xtrace
       - -c
       args:
-      - argocd app sync {{inputs.parameters.app}} {{inputs.parameters.flags}}
+      - argocd app sync {{inputs.parameters.APP}} {{inputs.parameters.FLAGS}}
 
   - name: argocd-wait
     inputs:
       parameters:
-      - name: app
-      - name: flags
+      - name: APP
+      - name: FLAGS
         default: ""
-      - name: serverUrl
-      - name: opts
+      - name: ARGOCD_SERVER
+      - name: OPTS
         default: ""
-      - name: tokenSecret
+      - name: TOKEN_SECRET
         default: argocd-token
-      - name: tokenSecretKey
+      - name: TOKEN_SECRET_KEY
         default: token
       - name: xtraceOption
         default: -o
@@ -184,18 +207,60 @@ spec:
       image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
       env:
       - name: ARGOCD_SERVER
-        value: "{{inputs.parameters.serverUrl}}"
+        value: "{{ inputs.parameters.ARGOCD_SERVER }}"
       - name: ARGOCD_AUTH_TOKEN
         valueFrom:
           secretKeyRef:
-            key: "{{inputs.parameters.tokenSecretKey}}"
-            name: "{{inputs.parameters.tokenSecret}}"
+            key: "{{ inputs.parameters.TOKEN_SECRET_KEY }}"
+            name: "{{ inputs.parameters.TOKEN_SECRET }}"
       - name: ARGOCD_OPTS
-        value: "{{inputs.parameters.opts}}"
+        value: "{{ inputs.parameters.OPTS }}"
       command:
       - sh
-      - "{{inputs.parameters.xtraceOption}}"
+      - "{{ inputs.parameters.xtraceOption }}"
       - xtrace
       - -c
       args:
-      - argocd app wait {{inputs.parameters.app}} {{inputs.parameters.flags}}
+      - argocd app wait {{ inputs.parameters.APP }} {{ inputs.parameters.FLAGS }}
+
+  - name: argocd-app-get
+    serviceAccountName: promotion-templates
+    inputs:
+      parameters:
+      - name: APP
+      - name: FLAGS
+        default: "-o json"
+      - name: ARGOCD_SERVER
+      - name: OPTS
+        default: ""
+      - name: TOKEN_SECRET
+        default: argocd-token
+      - name: TOKEN_SECRET_KEY
+        default: token
+      - name: xtraceOption
+        default: -o
+    outputs:
+      parameters:
+      - name: output
+        valueFrom:
+          path: /output.json
+    script:
+      name: app-get
+      image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
+      env:
+      - name: ARGOCD_SERVER
+        value: "{{ inputs.parameters.ARGOCD_SERVER }}"
+      - name: ARGOCD_AUTH_TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: "{{ inputs.parameters.TOKEN_SECRET_KEY }}"
+            name: "{{ inputs.parameters.TOKEN_SECRET }}"
+      - name: ARGOCD_OPTS
+        value: "{{inputs.parameters.OPTS}}"
+      command:
+      - sh
+      source: |
+        OUTPUT=$(argocd app get {{ inputs.parameters.APP }} {{ inputs.parameters.FLAGS }})
+        ERROR_CODE=$?
+        echo ${OUTPUT} > output.json
+        exit ${ERROR_CODE}
