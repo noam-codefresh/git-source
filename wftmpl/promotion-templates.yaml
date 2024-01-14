@@ -73,7 +73,7 @@ spec:
         arguments:
           parameters:
           - name: APP
-            value: '{{inputs.parameters.APP_NAME}}'
+            value: '{{ inputs.parameters.APP_NAME }}'
           - name: FLAGS
             value: --health --timeout 120
           - name: ARGOCD_SERVER
@@ -178,14 +178,14 @@ spec:
             key: "{{ inputs.parameters.TOKEN_SECRET_KEY }}"
             name: "{{ inputs.parameters.TOKEN_SECRET }}"
       - name: ARGOCD_OPTS
-        value: "{{inputs.parameters.OPTS}}"
+        value: "{{ inputs.parameters.OPTS }}"
       command:
       - sh
-      - "{{inputs.parameters.xtraceOption}}"
+      - "{{ inputs.parameters.xtraceOption }}"
       - xtrace
       - -c
       args:
-      - argocd app sync {{inputs.parameters.APP}} {{inputs.parameters.FLAGS}}
+      - argocd app sync {{ inputs.parameters.APP }} {{ inputs.parameters.FLAGS }}
 
   - name: argocd-wait
     inputs:
@@ -256,7 +256,7 @@ spec:
             key: "{{ inputs.parameters.TOKEN_SECRET_KEY }}"
             name: "{{ inputs.parameters.TOKEN_SECRET }}"
       - name: ARGOCD_OPTS
-        value: "{{inputs.parameters.OPTS}}"
+        value: "{{ inputs.parameters.OPTS }}"
       command:
       - sh
       source: |
