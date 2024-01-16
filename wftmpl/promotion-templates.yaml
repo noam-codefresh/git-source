@@ -26,9 +26,6 @@ spec:
           value: token
   templates:
   - name: manual-sync-promotion
-    metadata:
-      labels:
-        codefresh.io/workflow-origin: 'promotion-wrapper'
     inputs:
       parameters:
       - name: APP_NAME
@@ -44,7 +41,7 @@ spec:
     steps:
     - - name: pre-sync
         when: '"{{ inputs.parameters.PRE_SYNC_WORKFLOW }}" != ""'
-        template: submit-workflow
+        template: submit-workflow-tmpl
         arguments:
           parameters:
           - name: TEMPLATE_NAME
@@ -67,7 +64,7 @@ spec:
             value: argocd-token
           - name: TOKEN_SECRET_KEY
             value: token
-        template: argocd-sync
+        template: argocd-sync-tmpl
 
     - - name: wait
         arguments:
@@ -84,11 +81,20 @@ spec:
             value: argocd-token
           - name: TOKEN_SECRET_KEY
             value: token
-        template: argocd-wait
+        template: argocd-wait-tmpl
 
-    - - name: post-sync
+    - - name: stop-running-promotions
+        template: stop-workflow-tmpl
+        arguments:
+          parameters:
+          - name: LABEL_SELECTOR
+            value: "codefresh.io/app={{ workflow.labels.codefresh\u002eio/app }},codefresh.io/product={{ workflow.labels.codefresh\u002eio/product }}"
+          - name: MESSAGE
+            value: "terminating old promotion workflow, after syncing release \"{{ workflow.labels.codefresh\u002eio/release }}\""
+
+    - - name: submit
         when: '"{{ inputs.parameters.POST_SYNC_WORKFLOW }}" != ""'
-        template: submit-workflow
+        template: submit-workflow-tmpl
         arguments:
           parameters:
           - name: TEMPLATE_NAME
@@ -97,9 +103,6 @@ spec:
             value: '{{ inputs.parameters.ARGS }}'
 
   - name: auto-sync-promotion
-    metadata:
-      labels:
-        codefresh.io/workflow-origin: 'promotion-wrapper'
     inputs:
       parameters:
       - name: APP_NAME
@@ -111,19 +114,54 @@ spec:
       - name: ARGS
         default: ""
     steps:
-    - - name: post-sync
+    - - name: stop-running-promotions
+        template: stop-workflow-tmpl
+        arguments:
+          parameters:
+          - name: LABEL_SELECTOR
+            value: "codefresh.io/app={{ workflow.labels.codefresh\u002eio/app }},codefresh.io/product={{ workflow.labels.codefresh\u002eio/product }}"
+          - name: MESSAGE
+            value: "terminating old promotion workflow, after syncing release \"{{ workflow.labels.codefresh\u002eio/release }}\""
+
+    - - name: submit
         when: '"{{ inputs.parameters.POST_SYNC_WORKFLOW }}" != ""'
-        template: submit-workflow
+        template: submit-workflow-tmpl
         arguments:
           parameters:
           - name: TEMPLATE_NAME
             value: '{{ inputs.parameters.POST_SYNC_WORKFLOW }}'
           - name: ARGS
             value: '{{ inputs.parameters.ARGS }}'
-        continueOn:
-          failed: true
 
-  - name: submit-workflow
+  - name: stop-workflow-tmpl
+    serviceAccountName: promotion-templates
+    inputs:
+      parameters:
+      - name: NAME
+        default: ""
+      - name: LABEL_SELECTOR
+        default: ""
+      - name: FIELD_SELECTOR
+        default: ""
+      - name: NODE_FIELD_SELECTOR
+        default: ""
+      - name: MESSAGE
+        default: ""
+    script:
+      name: main
+      image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
+      command:
+      - sh
+      source: |
+        cmd='argo stop --selector "{{ inputs.parameters.LABEL_SELECTOR }}" --field-selector "{{ inputs.parameters.FIELD_SELECTOR }}" --node-field-selector "{{ inputs.parameters.NODE_FIELD_SELECTOR }}" --message "{{ inputs.parameters.MESSAGE }}"'
+        workflow_name="{{inputs.parameters.NAME}}"
+        if [[ ! -z $workflow_name ]]
+        then
+          cmd="${cmd} ${workflow_name}"
+        fi
+        eval $cmd
+
+  - name: submit-workflow-tmpl
     serviceAccountName: promotion-templates
     inputs:
       parameters:
@@ -148,10 +186,11 @@ spec:
           --wait \
           --output=json)
         ERROR_CODE=$?
+        echo ${ERROR_CODE}
         echo ${OUTPUT} > output.json
         exit ${ERROR_CODE}
 
-  - name: argocd-sync
+  - name: argocd-sync-tmpl
     inputs:
       parameters:
       - name: APP
@@ -187,7 +226,7 @@ spec:
       args:
       - argocd app sync {{ inputs.parameters.APP }} {{ inputs.parameters.FLAGS }}
 
-  - name: argocd-wait
+  - name: argocd-wait-tmpl
     inputs:
       parameters:
       - name: APP
@@ -223,7 +262,7 @@ spec:
       args:
       - argocd app wait {{ inputs.parameters.APP }} {{ inputs.parameters.FLAGS }}
 
-  - name: argocd-app-get
+  - name: argocd-app-get-tmpl
     serviceAccountName: promotion-templates
     inputs:
       parameters:
