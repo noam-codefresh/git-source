@@ -7,6 +7,7 @@ spec:
     parameters:
     - name: APP_NAME
     - name: ARGOCD_HOST
+    - name: COMMIT_SHA
   hooks:
     exit:
       template: argocd-app-get-tmpl
@@ -32,6 +33,8 @@ spec:
         value: '{{ workflow.parameters.APP_NAME }}'
       - name: ARGOCD_HOST
         value: '{{ workflow.parameters.ARGOCD_HOST }}'
+      - name: COMMIT_SHA
+        value: '{{ workflow.parameters.COMMIT_SHA }}'
       - name: PRE_SYNC_WORKFLOW
         default: ""      
       - name: POST_SYNC_WORKFLOW
@@ -39,6 +42,9 @@ spec:
       - name: ARGS
         default: ""
     steps:
+    - - name: stop-running-promotions
+        template: stop-workflow-tmpl
+
     - - name: pre-sync
         when: '"{{ inputs.parameters.PRE_SYNC_WORKFLOW }}" != ""'
         template: submit-workflow-tmpl
@@ -55,7 +61,7 @@ spec:
           - name: APP
             value: '{{ inputs.parameters.APP_NAME }}'
           - name: FLAGS
-            value: --prune --timeout 120
+            value: "--prune --timeout 120 --revision {{ inputs.parameters.COMMIT_SHA }}"
           - name: ARGOCD_SERVER
             value: '{{ inputs.parameters.ARGOCD_HOST }}'
           - name: OPTS
@@ -83,16 +89,7 @@ spec:
             value: token
         template: argocd-wait-tmpl
 
-    - - name: stop-running-promotions
-        template: stop-workflow-tmpl
-        arguments:
-          parameters:
-          - name: LABEL_SELECTOR
-            value: "codefresh.io/app={{ workflow.labels.codefresh\u002eio/app }},codefresh.io/product={{ workflow.labels.codefresh\u002eio/product }}"
-          - name: MESSAGE
-            value: "terminating old promotion workflow, after syncing release \"{{ workflow.labels.codefresh\u002eio/release }}\""
-
-    - - name: submit
+    - - name: post-sync
         when: '"{{ inputs.parameters.POST_SYNC_WORKFLOW }}" != ""'
         template: submit-workflow-tmpl
         arguments:
@@ -116,12 +113,6 @@ spec:
     steps:
     - - name: stop-running-promotions
         template: stop-workflow-tmpl
-        arguments:
-          parameters:
-          - name: LABEL_SELECTOR
-            value: "codefresh.io/app={{ workflow.labels.codefresh\u002eio/app }},codefresh.io/product={{ workflow.labels.codefresh\u002eio/product }}"
-          - name: MESSAGE
-            value: "terminating old promotion workflow, after syncing release \"{{ workflow.labels.codefresh\u002eio/release }}\""
 
     - - name: submit
         when: '"{{ inputs.parameters.POST_SYNC_WORKFLOW }}" != ""'
@@ -137,29 +128,27 @@ spec:
     serviceAccountName: promotion-templates
     inputs:
       parameters:
-      - name: NAME
-        default: ""
-      - name: LABEL_SELECTOR
-        default: ""
-      - name: FIELD_SELECTOR
-        default: ""
-      - name: NODE_FIELD_SELECTOR
-        default: ""
+      - name: PARENT_LABEL_SELECTOR
+        value: "codefresh.io/product=={{ workflow.labels.codefresh\u002eio/product }},codefresh.io/app=={{ workflow.labels.codefresh\u002eio/app }},codefresh.io/commit-sha!={{ workflow.labels.codefresh\u002eio/commit-sha }},workflows.argoproj.io/phase!=Succeeded,workflows.argoproj.io/phase!=Failed,workflows.argoproj.io/phase!=Error"
       - name: MESSAGE
-        default: ""
+        value: "terminating old promotion workflow, after syncing release \"{{ workflow.labels.codefresh\u002eio/release }}\""
     script:
       name: main
       image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
       command:
       - sh
       source: |
-        cmd='argo stop --selector "{{ inputs.parameters.LABEL_SELECTOR }}" --field-selector "{{ inputs.parameters.FIELD_SELECTOR }}" --node-field-selector "{{ inputs.parameters.NODE_FIELD_SELECTOR }}" --message "{{ inputs.parameters.MESSAGE }}"'
-        workflow_name="{{inputs.parameters.NAME}}"
-        if [[ ! -z $workflow_name ]]
-        then
-          cmd="${cmd} ${workflow_name}"
-        fi
-        eval $cmd
+        PARENT_WORKFLOWS=$(argo list \
+            --selector "{{ inputs.parameters.PARENT_LABEL_SELECTOR }}" \
+            --output json)
+        echo ${PARENT_WORKFLOWS} | jq -c '.[].metadata' | while read i; do
+            NAME=$(echo ${i} | jq -r '.name')
+            ID=$(echo ${i} | jq -r '.uid')
+            echo "stopping promotion-wrapper \"$NAME\""
+            argo stop ${NAME} --message "{{ inputs.parameters.MESSAGE }}"
+            echo "stopping pre/post-sync promotion workflows"
+            argo stop --selector "codefresh.io/submit-wf-parent-uid==${ID},workflows.argoproj.io/phase!=Succeeded,workflows.argoproj.io/phase!=Failed,workflows.argoproj.io/phase!=Error" --message "{{ inputs.parameters.MESSAGE }}"
+        done
 
   - name: submit-workflow-tmpl
     serviceAccountName: promotion-templates
