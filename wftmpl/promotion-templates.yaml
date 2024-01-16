@@ -9,7 +9,7 @@ spec:
     - name: ARGOCD_HOST
   hooks:
     exit:
-      template: argocd-app-get
+      template: argocd-app-get-tmpl
       arguments:
         parameters:
         - name: APP
