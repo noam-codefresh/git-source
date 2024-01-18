@@ -5,7 +5,7 @@ metadata:
 spec:
   productSelector: loans
   triggerEnvironment: qa
-  priority: 3
+  priority: 4
   steps:
   - environment: staging
     dependsOn:
