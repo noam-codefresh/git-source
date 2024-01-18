@@ -9,7 +9,7 @@ spec:
       operator: NotIn
       values:
       - production
-  priority: 5
+  priority: 6
   versionSource:
     file: Chart.yaml
     jsonPath: appVersion2
