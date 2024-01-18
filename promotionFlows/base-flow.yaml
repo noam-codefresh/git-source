@@ -1,7 +1,7 @@
 apiVersion: csdp.codefresh.io/v1
-kind: PromotionPolicy
+kind: PromotionFlow
 metadata:
-  name: base-policy
+  name: base-flow
 spec:
   productSelector: loans
   triggerEnvironment: qa
