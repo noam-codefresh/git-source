@@ -8,7 +8,7 @@ spec:
   arguments:
     parameters:
     - name: APP_NAME
-    - name: APP_REVISION
+    - name: COMMIT_SHA
   entrypoint: echo
   templates:
   - name: echo
@@ -17,4 +17,4 @@ spec:
       command:
       - sh
       source: |
-        echo "synced app {{ workflow.parameters.APP_NAME }} to {{ workflow.parameters.APP_REVISION }}"
+        echo "synced app {{ workflow.parameters.APP_NAME }} to {{ workflow.parameters.COMMIT_SHA }}"

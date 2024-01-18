@@ -1,0 +1,15 @@
+apiVersion: csdp.codefresh.io/v1
+kind: PromotionPolicy
+metadata:
+  name: base-policy
+spec:
+  productSelector: loans
+  triggerEnvironment: qa
+  priority: 0
+  steps:
+  - environment: staging
+    dependsOn:
+    - dev
+  - environment: production
+    dependsOn:
+    - staging
