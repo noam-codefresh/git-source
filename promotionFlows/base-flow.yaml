@@ -10,6 +10,6 @@ spec:
   - environment: staging
     dependsOn:
     - dev
-  - environment: productionab
+  - environment: productiona
     dependsOn:
     - staging
