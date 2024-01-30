@@ -15,7 +15,7 @@ spec:
     targetRevision: production-west
     path: loans
   destination:
-    name: in-cluster
+    name: noam
     namespace: production-west
   syncPolicy:
     automated:

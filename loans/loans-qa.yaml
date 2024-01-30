@@ -15,7 +15,7 @@ spec:
     targetRevision: qa
     path: loans
   destination:
-    name: in-cluster
+    name: noam
     namespace: qa
   syncPolicy:
     automated:
