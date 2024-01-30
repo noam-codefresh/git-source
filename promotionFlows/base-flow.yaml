@@ -3,9 +3,7 @@ kind: PromotionFlow
 metadata:
   name: base-flow
 spec:
-  productSelector: loans
   triggerEnvironment: qa
-  priority: 5
   steps:
   - environment: staging
     dependsOn:
