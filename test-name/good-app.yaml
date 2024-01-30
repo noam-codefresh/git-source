@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: good-app #
+  name: loans-qa #
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
 spec:
