@@ -23,7 +23,7 @@ spec:
         targetRevision: HEAD
       destination:
         namespace: runtime
-        name: in-cluster
+        name: noam
       syncPolicy:
         automated:
           allowEmpty: true
