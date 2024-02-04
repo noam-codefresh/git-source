@@ -15,7 +15,7 @@ spec:
     targetRevision: staging
     path: loans
   destination:
-    name: noam
+    name: in-cluster
     namespace: staging
   syncPolicy:
     automated:
