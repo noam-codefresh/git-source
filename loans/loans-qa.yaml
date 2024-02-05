@@ -12,8 +12,8 @@ spec:
   project: default
   source:
     repoURL: https://github.com/noam-codefresh/git-source.git
-    targetRevision: qa
-    path: loans
+    targetRevision: main
+    path: loans-apps/qa
   destination:
     name: in-cluster
     namespace: qa

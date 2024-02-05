@@ -1,0 +1,22 @@
+loans:
+  image:
+    repository: quay.io/noam_codefresh/loans
+    tag: v3
+    pullPolicy: Always
+
+  replicaCount: 2
+
+  resources:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+interest:
+  image:
+    repository: quay.io/noam_codefresh/interest
+    tag: v3
+
+  replicaCount: 2
