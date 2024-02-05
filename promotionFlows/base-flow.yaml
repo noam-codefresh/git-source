@@ -16,7 +16,7 @@ spec:
       preSync: 'bbb'
       postSync: 'ccc'
       # action is a required field
-      action: pr # commit|pr|none
+      action: none # commit|pr|none
 
   - environment: productiona
     dependsOn:
