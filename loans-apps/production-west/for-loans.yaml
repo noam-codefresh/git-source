@@ -1,0 +1,15 @@
+database:
+  host: https://prod-db.server
+  port: 5432
+  username: myuser-prod
+
+server:
+  port: https://prod-fe.server
+  timeout: 30
+  env:
+    SESSION_INTERVAL: 6000
+    BATCH_SIZE: 25
+
+logging:
+  level: warn
+  file: /path/to/logfile.log
