@@ -5,9 +5,22 @@ metadata:
 spec:
   triggerEnvironment: qa
   steps:
+
   - environment: staging
     dependsOn:
     - dev
+    policy:
+      # preAction, preSync and PostSync are *not* required
+      # preSync is meaningless if the app is set to autoSync in argocd (will not run preSync)
+      preAction: 'probably-do-nothing-but-who-knows?'
+      preSync: 'setup-something-before-sync'
+      postSync: 'test-deployment'
+      # action is a required field
+      action: commit # commit|pr|none
+
   - environment: productiona
     dependsOn:
     - staging
+    policy:
+      postSync: 'notify-slack'
+      action: commit # commit|pr|none
