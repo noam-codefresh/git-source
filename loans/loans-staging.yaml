@@ -12,8 +12,8 @@ spec:
   project: default
   source:
     repoURL: https://github.com/noam-codefresh/git-source.git
-    targetRevision: staging
-    path: loans
+    targetRevision: main
+    path: loans-apps/staging
   destination:
     name: in-cluster
     namespace: staging

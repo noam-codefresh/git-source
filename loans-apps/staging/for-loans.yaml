@@ -1,0 +1,16 @@
+database:
+  host: localhost
+  port: 5432
+  username: myuser
+  password: mypassword
+
+server:
+  port: 8080
+  timeout: 30
+  env:
+    SESSION_INTERVAL: 1500
+    BATCH_SIZE: 20
+
+logging:
+  level: debug
+  file: /path/to/logfile.log
