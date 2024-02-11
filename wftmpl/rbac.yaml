@@ -28,6 +28,16 @@ rules:
   - workflows
   verbs:
   - create
+  - get
+  - watch 
+  - list
+  - patch 
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflowtaskresults
+  verbs:
+  - create
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -38,5 +48,6 @@ roleRef:
   kind: Role
   name: promotion-templates
 subjects:
-- kind: ServiceAccount
-  name: promotion-templates
+  - kind: ServiceAccount
+    namespace: runtime
+    name: promotion-templates
