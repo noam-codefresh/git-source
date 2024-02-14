@@ -3,7 +3,8 @@ kind: PromotionFlow
 metadata:
   name: base-flow
 spec:
-  triggerEnvironment: qa
+  triggerEnvironment: dev
+  # postAction: 'bbb'
   steps:
 
   - environment: staging
@@ -13,14 +14,13 @@ spec:
       # preAction, preSync and PostSync are *not* required
       # preSync is meaningless if the app is set to autoSync in argocd (will not run preSync)
       preAction: 'aaa'
-      preSync: 'bbb'
-      postSync: 'ccc'
+      postAction: 'ccc'
       # action is a required field
       action: none # commit|pr|none
 
-  - environment: productiona
+  - environment: production
     dependsOn:
     - staging
     policy:
-      postSync: 'notify-slack'
+      postAction: 'notify-slack'
       action: commit # commit|pr|none
