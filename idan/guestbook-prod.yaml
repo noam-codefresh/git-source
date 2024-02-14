@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook-prod
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/foreground
+  labels:
+    codefresh.io/product: guestbook
+spec:
+  project: default
+  source:
+    path: helm-guestbook
+    repoURL: https://github.com/idan-codefresh/argocd-example-apps.git
+    targetRevision: production
+  destination:
+    name: in-cluster
+    namespace: idan-production
+  syncPolicy:
+    syncOptions:
+      - PrunePropagationPolicy=foreground
+      - Replace=false
+      - PruneLast=false
+      - Validate=true
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=false
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=false
