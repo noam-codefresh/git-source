@@ -1,14 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: post-sync
+  name: pre-action
   labels:
     codefresh.io/promotion: 'true'
 spec:
   arguments:
     parameters:
     - name: APP_NAME
-    - name: COMMIT_SHA
   entrypoint: echo
   templates:
   - name: echo
@@ -17,4 +16,4 @@ spec:
       command:
       - sh
       source: |
-        echo "synced app {{ workflow.parameters.APP_NAME }} to {{ workflow.parameters.COMMIT_SHA }}"
+        echo "pre action {{ workflow.parameters.APP_NAME }}"
