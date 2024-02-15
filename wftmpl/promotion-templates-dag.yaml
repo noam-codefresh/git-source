@@ -175,7 +175,7 @@ spec:
       parameters:
       - name: RESULT
         valueFrom:
-          expression: "inputs.parameters.ACTION_ENDPOINT != '' ? tasks.action.outputs.RESULT : tasks['pre-action'].outputs.RESULT"
+          expression: "inputs.parameters.ACTION_ENDPOINT != '' ? tasks.action.outputs.parameters.RESPONSE : tasks['pre-action'].outputs.parameters.RESULT"
     dag:
       tasks:
       - name: pre-action
