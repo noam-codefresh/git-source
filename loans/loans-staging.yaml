@@ -18,6 +18,9 @@ spec:
     name: in-cluster
     namespace: staging
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - PrunePropagationPolicy=foreground
       - Replace=false
