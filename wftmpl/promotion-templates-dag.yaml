@@ -71,7 +71,7 @@ spec:
       - name: run-action
         depends: "stop-running-promotions"
         when: "{{=inputs.parameters.POST_ACTION_ONLY != 'true'}}"
-        template: run-action-curl-tmpl
+        template: run-action-tmpl
         arguments:
           parameters:
           - name: APP_PROXY_SERVER
@@ -101,7 +101,7 @@ spec:
 
       - name: sync-app
         depends: "get-app"
-        when: "{{= !('automated' in jsonpath(tasks['get-app'].outputs.parameters.APP_JSON, '$.spec.syncPolicy'))}}"
+        when: "{{= !('automated' in jsonpath(tasks['get-app'].outputs.parameters.RESULT, '$.spec.syncPolicy'))}}"
         arguments:
           parameters:
           - name: ARGOCD_SERVER
@@ -141,7 +141,7 @@ spec:
           artifacts:
           - name: ARGS
             raw:
-              data: "{{inputs.parameters.ARGS}}"
+              data: "{{tasks['run-action'].output.RESULT}}"
 
       - name: final-wait-app
         depends: "post-action"
@@ -159,7 +159,7 @@ spec:
             value: token
         template: argocd-wait-tmpl
 
-  - name: run-action-curl-tmpl
+  - name: run-action-tmpl
     inputs:
       parameters:
       - name: APP_PROXY_SERVER
@@ -171,6 +171,11 @@ spec:
         default: ""
       - name: ARGS
         default: ""
+    outputs:
+      parameters:
+      - name: RESULT
+        valueFrom:
+          expression: "inputs.parameters.ACTION_ENDPOINT != '' ? tasks.action.outputs.RESULT : tasks['pre-action'].outputs.RESULT"
     dag:
       tasks:
       - name: pre-action
@@ -186,8 +191,9 @@ spec:
               data: "{{inputs.parameters.ARGS}}"
 
       - name: action
+        when: "{{= inputs.parameters.ACTION_ENDPOINT != ''}}"
         depends: "pre-action"
-        template: action-curl-tmpl
+        template: action-tmpl
         arguments:
           parameters:
           - name: URL
@@ -203,57 +209,6 @@ spec:
 
       - name: suspend
         depends: "(pre-action.Succeeded && !action.Failed) || action.Succeeded"
-        template: suspend-tmpl
-
-  - name: run-action-tmpl
-    inputs:
-      parameters:
-      - name: APP_PROXY_SERVER
-      - name: ACTION_ENDPOINT
-        default: ""
-      - name: ACTION_BODY
-        default: ""
-      - name: PRE_ACTION_TMPL
-        default: ""
-      - name: ARGS
-        default: ""
-    dag:
-      tasks:
-      - name: pre-action
-        when: "{{= inputs.parameters.PRE_ACTION_TMPL != ''}}"
-        template: submit-workflow-tmpl
-        arguments:
-          parameters:
-          - name: TEMPLATE_NAME
-            value: "{{inputs.parameters.PRE_ACTION_TMPL}}"
-          artifacts:
-          - name: ARGS
-            raw:
-              data: "{{inputs.parameters.ARGS}}"
-
-      - name: get-token
-        depends: "pre-action"
-        when: "{{= inputs.parameters.ACTION_ENDPOINT != ''}}"
-        template: get-token-tmpl
-
-      - name: action
-        depends: "get-token"
-        template: action-tmpl
-        arguments:
-          parameters:
-          - name: URL
-            value: "http://{{inputs.parameters.APP_PROXY_SERVER}}/api/{{inputs.parameters.ACTION_ENDPOINT}}"
-          - name: TOKEN
-            value: "{{dag['get-token'].outputs.VALUE}}"
-          - name: BODY
-            value: "{{inputs.parameters.ACTION_BODY}}"
-
-      - name: fail
-        depends: "pre-action.Skipped && action.Omitted"
-        template: fail-tmpl
-
-      - name: suspend
-        depends: "(pre-action.Succeeded && !get-token.Failed) || action.Succeeded"
         template: suspend-tmpl
 
   - name: stop-workflow-tmpl
@@ -284,7 +239,12 @@ spec:
       - name: TEMPLATE_NAME
       artifacts:
       - name: ARGS
-        path: args.json
+        path: /tmp/args.json
+    outputs:
+      parameters:
+      - name: RESULT
+        valueFrom:
+          path: /tmp/result.json
     script:
       name: submit
       image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
@@ -302,35 +262,12 @@ spec:
       source: |
         argo submit \
           --from wftmpl/{{inputs.parameters.TEMPLATE_NAME}} \
-          --parameter-file args.json \
+          --parameter-file /tmp/args.json \
           --labels codefresh.io/submit-wf-parent-uid=${PARENT_UID},codefresh.io/workflow-origin="promotion",codefresh.io/app=${APP_LABEL},codefresh.io/promotion-flow=${PROMOTION_FLOW_LABEL},codefresh.io/release=${RELEASE_LABEL} \
           --wait \
-          --output=json
+          --output=json > /tmp/result.json
 
-  - name: get-token-tmpl
-    inputs:
-      parameters:
-      - name: NAMESPACE
-        value: "{{workflow.namespace}}"
-      - name: NAME
-        value: codefresh-token
-      - name: KEY
-        value: token
-    outputs:
-      parameters:
-      - name: VALUE
-        valueFrom:
-          jsonPath: "{.data.{{inputs.parameters.KEY}}}"
-    resource:
-      action: get
-      manifest: |
-        apiVersion: v1
-        kind: Secret
-        metadata:
-          name: {{inputs.parameters.NAME}}
-          namespace: {{inputs.parameters.NAMESPACE}}
-
-  - name: action-curl-tmpl
+  - name: action-tmpl
     inputs:
       parameters:
       - name: URL
@@ -340,12 +277,12 @@ spec:
         value: token
       artifacts:
       - name: BODY
-        path: body.json
+        path: /tmp/body.json
     outputs:
       parameters:
       - name: RESPONSE
         valueFrom:
-          path: response.json
+          path: /tmp/response.json
     script:
       name: curl
       image: quay.io/curl/curl-base:8.6.0
@@ -360,22 +297,22 @@ spec:
       command:
       - sh
       source: |
-        echo "" > response.json
+        echo "" > /tmp/response.json
 
         echo "curl ${URL} \
           --header \"Content-Type: application/json\" \
-          --header \"Authorization: Bearer ${TOKEN}\" \
-          --data @/body.json \
+          --header \"Authorization: ${TOKEN}\" \
+          --data @/tmp/body.json \
           --silent \
-          --output response.json \
+          --output /tmp/response.json \
           --write-out \"%{http_code}\""
 
         STATUS_CODE=$(curl ${URL} \
           --header "Content-Type: application/json" \
-          --header "Authorization: Bearer ${TOKEN}" \
-          --data @/body.json \
+          --header "Authorization: ${TOKEN}" \
+          --data @/tmp/body.json \
           --silent \
-          --output response.json \
+          --output /tmp/response.json \
           --write-out "%{http_code}")
         EXIT_CODE=$?
         if [[ ${EXIT_CODE} -ne 0 ]]; then
@@ -392,23 +329,6 @@ spec:
           echo "error performing action in app-proxy, STATUS_CODE: ${STATUS_CODE}"
           exit $STATUS_CODE
         fi
-
-  - name: action-tmpl
-    inputs:
-      parameters:
-        - name: URL
-        - name: TOKEN
-        - name: BODY
-    http:
-      url: "{{inputs.parameters.URL}}"
-      method: "POST"
-      headers:
-      - name: "Authorization"
-        value: "Bearer {{input.parameters.TOKEN}}"
-      - name: "content-type"
-        value: "application/json"
-      body: "{{inputs.parameters.BODY}}"
-      successCondition: "response.statusCode == 200"
 
   - name: argocd-sync-tmpl
     inputs:
@@ -476,9 +396,9 @@ spec:
         default: token
     outputs:
       parameters:
-      - name: APP_JSON
+      - name: RESULT
         valueFrom:
-          path: /tmp/app.json
+          path: /tmp/result.json
     script:
       name: app-get
       image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
@@ -495,7 +415,7 @@ spec:
       command:
       - sh
       source: |
-        argocd app get {{inputs.parameters.APP}} -o json > /tmp/app.json
+        argocd app get {{inputs.parameters.APP}} -o json > /tmp/result.json
 
   - name: fail-tmpl
     container:
