@@ -298,15 +298,6 @@ spec:
       - sh
       source: |
         echo "" > /tmp/response.json
-
-        echo "curl ${URL} \
-          --header \"Content-Type: application/json\" \
-          --header \"Authorization: ${TOKEN}\" \
-          --data @/tmp/body.json \
-          --silent \
-          --output /tmp/response.json \
-          --write-out \"%{http_code}\""
-
         STATUS_CODE=$(curl ${URL} \
           --header "Content-Type: application/json" \
           --header "Authorization: ${TOKEN}" \
