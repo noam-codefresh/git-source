@@ -7,63 +7,78 @@ spec:
   entrypoint: main-tmpl
   arguments:
     parameters:
-    - name: ARG
+    - name: PRE_ACTION
+      value: ""
+    - name: ACTION
+      value: ""
   templates:
   - name: main-tmpl
     inputs:
       parameters:
-      - name: ARG
-        value: "{{workflow.parameters.ARG}}"
+      - name: PRE_ACTION
+        value: "{{workflow.parameters.PRE_ACTION}}"
+      - name: ACTION
+        value: "{{workflow.parameters.ACTION}}"
     dag:
       tasks:
-      - name: A
-        template: sub-tmpl
+      - name: pre-run
+        template: action-dag-tmpl
         arguments:
           parameters:
-          - name: ARG
-            value: "{{inputs.parameters.ARG}}"
+          - name: PRE_ACTION
+            value: "{{inputs.parameters.PRE_ACTION}}"
+          - name: ACTION
+            value: "{{inputs.parameters.ACTION}}"
 
-      - name: B
-        depends: "A"
+      - name: post-action
+        depends: "pre-run"
         template: echo-tmpl
         arguments:
           artifacts:
           - name: FILE
             raw:
-              data: "{{tasks.A.outputs.parameters.RESULT}}"
+              data: "{{tasks.pre-run.outputs.parameters.RESULT}}"
 
-
-  - name: sub-tmpl
+  - name: action-dag-tmpl
     inputs:
       parameters:
-      - name: ARG
+      - name: PRE_ACTION
+      - name: ACTION
     outputs:
       parameters:
       - name: RESULT
         valueFrom:
-          expression: "inputs.parameters.ARG == 'one' ? tasks.A1.outputs.parameters.RESULT : tasks.A2.outputs.parameters.RESULT"
+          expression: "inputs.parameters.ACTION == '' ? tasks['pre-action'].outputs.parameters.RESULT : tasks.action.outputs.parameters.RESULT"
     dag:
       tasks:
-      - name: A1
-        when: "{{= inputs.parameters.ARG == 'one'}}"
+      - name: pre-action
+        when: "{{= inputs.parameters.PRE_ACTION != ''}}"
         template: echo-tmpl
         arguments:
           artifacts:
           - name: FILE
             raw:
               data: |
-                file from A1
+                file from pre-action {{inputs.parameters.PRE_ACTION}}
 
-      - name: A2
-        when: "{{= inputs.parameters.ARG != 'one'}}"
-        depends: "A1"
+      - name: action
+        when: "{{= inputs.parameters.ACTION != ''}}"
+        depends: "pre-action"
         template: echo-tmpl
         arguments:
           artifacts:
           - name: FILE
             raw:
               data: |
-                file from A2
+                file from action {{inputs.parameters.ACTION}}
+      
+      - name: fail
+        depends: "pre-action.Skipped && action.Skipped"
+        template: fail-tmpl
+
+      - name: suspend
+        depends: "(pre-action.Succeeded && !action.Failed) || action.Succeeded"
+        template: suspend-tmpl
 
   - name: echo-tmpl
     inputs:
@@ -85,3 +100,15 @@ spec:
         cat /tmp/file > /tmp/result
         cat /tmp/result
         echo "after"
+
+  - name: fail-tmpl
+    container:
+      image: alpine:latest
+      command:
+      - sh
+      - -c
+      args:
+      - exit 1
+
+  - name: suspend-tmpl
+    suspend: {}
