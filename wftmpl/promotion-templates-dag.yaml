@@ -71,7 +71,7 @@ spec:
       - name: run-action
         depends: "stop-running-promotions"
         when: "{{=inputs.parameters.POST_ACTION_ONLY != 'true'}}"
-        template: run-action-tmpl
+        template: action-dag-tmpl
         arguments:
           parameters:
           - name: APP_PROXY_SERVER
@@ -141,7 +141,7 @@ spec:
           artifacts:
           - name: ARGS
             raw:
-              data: "{{tasks['run-action'].output.RESULT}}"
+              data: "{{tasks['run-action'].outputs.parameters.RESULT}}"
 
       - name: final-wait-app
         depends: "post-action"
@@ -159,7 +159,7 @@ spec:
             value: token
         template: argocd-wait-tmpl
 
-  - name: run-action-tmpl
+  - name: action-dag-tmpl
     inputs:
       parameters:
       - name: APP_PROXY_SERVER
