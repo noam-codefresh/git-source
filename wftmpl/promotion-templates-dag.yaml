@@ -141,7 +141,7 @@ spec:
           artifacts:
           - name: ARGS
             raw:
-              data: "{{tasks['run-action'].outputs.parameters.RESULT}}"
+              data: "{{tasks.run-action.outputs.parameters.RESULT}}"
 
       - name: final-wait-app
         depends: "post-action"
@@ -175,7 +175,7 @@ spec:
       parameters:
       - name: RESULT
         valueFrom:
-          expression: "inputs.parameters.ACTION_ENDPOINT != '' ? tasks.action.outputs.parameters.RESPONSE : tasks['pre-action'].outputs.parameters.RESULT"
+          expression: "inputs.parameters.ACTION_ENDPOINT != '' ? tasks.action.outputs.parameters.RESPONSE : tasks.pre-action.outputs.parameters.RESULT"
     dag:
       tasks:
       - name: pre-action
