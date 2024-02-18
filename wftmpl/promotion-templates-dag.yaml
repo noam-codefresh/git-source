@@ -6,7 +6,7 @@ spec:
   serviceAccountName: promotion-templates
   hooks:
     exit:
-      template: argocd-app-get-tmpl
+      template: argocd-get-tmpl
       arguments:
         parameters:
         - name: ARGOCD_SERVER
@@ -40,23 +40,23 @@ spec:
     inputs:
       parameters:
       - name: APP_NAME
-        value: "{{workflow.parameters.APP_NAME}}"
+        value: "{{ workflow.parameters.APP_NAME }}"
       - name: APP_PROXY_SERVER
-        value: "{{workflow.parameters.APP_PROXY_SERVER}}"
+        value: "{{ workflow.parameters.APP_PROXY_SERVER }}"
       - name: ARGOCD_SERVER
-        value: "{{workflow.parameters.ARGOCD_SERVER}}"
+        value: "{{ workflow.parameters.ARGOCD_SERVER }}"
       - name: POST_ACTION_ONLY
-        value: "{{workflow.parameters.POST_ACTION_ONLY}}"
+        value: "{{ workflow.parameters.POST_ACTION_ONLY }}"
       - name: ACTION_ENDPOINT
-        value: "{{workflow.parameters.ACTION_ENDPOINT}}"
+        value: "{{ workflow.parameters.ACTION_ENDPOINT }}"
       - name: ACTION_BODY
-        value: "{{workflow.parameters.ACTION_BODY}}"
+        value: "{{ workflow.parameters.ACTION_BODY }}"
       - name: PRE_ACTION_TMPL
-        default: "{{workflow.parameters.PRE_ACTION_TMPL}}"
+        default: "{{ workflow.parameters.PRE_ACTION_TMPL }}"
       - name: POST_ACTION_TMPL
-        default: "{{workflow.parameters.POST_ACTION_TMPL}}"
+        default: "{{ workflow.parameters.POST_ACTION_TMPL }}"
       - name: ARGS
-        default: "{{workflow.parameters.ARGS}}"
+        default: "{{ workflow.parameters.ARGS }}"
     dag:
       tasks:
       - name: stop-running-promotions
@@ -64,36 +64,36 @@ spec:
         arguments:
           parameters:
           - name: PARENT_LABEL_SELECTOR
-            value: "codefresh.io/app=={{workflow.labels.codefresh\u002eio/app}},codefresh.io/promotion-flow=={{workflow.labels.codefresh\u002eio/promotion-flow}},codefresh.io/release!={{workflow.labels.codefresh\u002eio/release}},workflows.argoproj.io/phase!=Succeeded,workflows.argoproj.io/phase!=Failed,workflows.argoproj.io/phase!=Error"
+            value: "codefresh.io/app=={{ workflow.labels.codefresh\u002eio/app }},codefresh.io/promotion-flow=={{ workflow.labels.codefresh\u002eio/promotion-flow }},codefresh.io/release!={{ workflow.labels.codefresh\u002eio/release }},workflows.argoproj.io/phase!=Succeeded,workflows.argoproj.io/phase!=Failed,workflows.argoproj.io/phase!=Error"
           - name: MESSAGE
-            value: "stopping old promotion workflow, after starting release \"{{workflow.labels.codefresh\u002eio/release}}\""
+            value: "stopping old promotion workflow, after starting release \"{{ workflow.labels.codefresh\u002eio/release }}\""
 
       - name: run-action
         depends: "stop-running-promotions"
-        when: "{{=inputs.parameters.POST_ACTION_ONLY != 'true'}}"
+        when: "{{= inputs.parameters.POST_ACTION_ONLY != 'true' }}"
         template: action-dag-tmpl
         arguments:
           parameters:
           - name: APP_PROXY_SERVER
-            value: "{{inputs.parameters.APP_PROXY_SERVER}}"
+            value: "{{ inputs.parameters.APP_PROXY_SERVER }}"
           - name: ACTION_ENDPOINT
-            value: "{{inputs.parameters.ACTION_ENDPOINT}}"
+            value: "{{ inputs.parameters.ACTION_ENDPOINT }}"
           - name: ACTION_BODY
-            value: "{{inputs.parameters.ACTION_BODY}}"
+            value: "{{ inputs.parameters.ACTION_BODY }}"
           - name: PRE_ACTION_TMPL
-            value: "{{inputs.parameters.PRE_ACTION_TMPL}}"
+            value: "{{ inputs.parameters.PRE_ACTION_TMPL }}"
           - name: ARGS
-            value: "{{inputs.parameters.ARGS}}"
+            value: "{{ inputs.parameters.ARGS }}"
 
       - name: get-app
         depends: "run-action.Skipped || run-action.Succeeded"
-        template: argocd-app-get-tmpl
+        template: argocd-get-tmpl
         arguments:
           parameters:
           - name: ARGOCD_SERVER
-            value: "{{inputs.parameters.ARGOCD_SERVER}}"
+            value: "{{ inputs.parameters.ARGOCD_SERVER }}"
           - name: APP
-            value: "{{inputs.parameters.APP_NAME}}"
+            value: "{{ inputs.parameters.APP_NAME }}"
           - name: TOKEN_SECRET
             value: argocd-token
           - name: TOKEN_SECRET_KEY
@@ -101,13 +101,13 @@ spec:
 
       - name: sync-app
         depends: "get-app"
-        when: "{{= !('automated' in jsonpath(tasks['get-app'].outputs.parameters.RESULT, '$.spec.syncPolicy'))}}"
+        when: "{{= !('automated' in jsonpath(tasks['get-app'].outputs.parameters.RESULT, '$.spec.syncPolicy')) }}"
         arguments:
           parameters:
           - name: ARGOCD_SERVER
-            value: "{{inputs.parameters.ARGOCD_SERVER}}"
+            value: "{{ inputs.parameters.ARGOCD_SERVER }}"
           - name: APP
-            value: "{{inputs.parameters.APP_NAME}}"
+            value: "{{ inputs.parameters.APP_NAME }}"
           - name: TOKEN_SECRET
             value: argocd-token
           - name: TOKEN_SECRET_KEY
@@ -119,9 +119,9 @@ spec:
         arguments:
           parameters:
           - name: ARGOCD_SERVER
-            value: "{{inputs.parameters.ARGOCD_SERVER}}"
+            value: "{{ inputs.parameters.ARGOCD_SERVER }}"
           - name: APP
-            value: "{{inputs.parameters.APP_NAME}}"
+            value: "{{ inputs.parameters.APP_NAME }}"
           - name: FLAGS
             value: --health --timeout 120
           - name: TOKEN_SECRET
@@ -132,25 +132,24 @@ spec:
 
       - name: post-action
         depends: "sync-app.Skipped || wait-app.Succeeded"
-        when: "{{=inputs.parameters.POST_ACTION_TMPL != ''}}"
-        template: submit-workflow-tmpl
+        when: "{{= inputs.parameters.POST_ACTION_TMPL != '' }}"
+        template: workflow-tmpl
         arguments:
           parameters:
           - name: TEMPLATE_NAME
-            value: "{{inputs.parameters.POST_ACTION_TMPL}}"
+            value: "{{ inputs.parameters.POST_ACTION_TMPL }}"
           artifacts:
           - name: ARGS
-            raw:
-              data: "{{tasks.run-action.outputs.parameters.RESULT}}"
+            from: "{{ tasks.run-action.outputs.parameters.RESULT }}"
 
       - name: final-wait-app
         depends: "post-action"
         arguments:
           parameters:
           - name: ARGOCD_SERVER
-            value: "{{inputs.parameters.ARGOCD_SERVER}}"
+            value: "{{ inputs.parameters.ARGOCD_SERVER }}"
           - name: APP
-            value: "{{inputs.parameters.APP_NAME}}"
+            value: "{{ inputs.parameters.APP_NAME }}"
           - name: FLAGS
             value: --health --sync --timeout 120
           - name: TOKEN_SECRET
@@ -175,63 +174,86 @@ spec:
       parameters:
       - name: RESULT
         valueFrom:
-          expression: "inputs.parameters.ACTION_ENDPOINT != '' ? tasks.action.outputs.parameters.RESPONSE : tasks.pre-action.outputs.parameters.RESULT"
+          expression: "tasks.merge-args.outputs.result"
     dag:
       tasks:
       - name: pre-action
-        when: "{{= inputs.parameters.PRE_ACTION_TMPL != ''}}"
-        template: submit-workflow-tmpl
+        when: "{{= inputs.parameters.PRE_ACTION_TMPL != '' }}"
+        template: workflow-tmpl
         arguments:
           parameters:
           - name: TEMPLATE_NAME
-            value: "{{inputs.parameters.PRE_ACTION_TMPL}}"
+            value: "{{ inputs.parameters.PRE_ACTION_TMPL }}"
           artifacts:
           - name: ARGS
             raw:
-              data: "{{inputs.parameters.ARGS}}"
+              data: "{{ inputs.parameters.ARGS }}"
 
       - name: action
-        when: "{{= inputs.parameters.ACTION_ENDPOINT != ''}}"
+        when: "{{= inputs.parameters.ACTION_ENDPOINT != '' }}"
         depends: "pre-action"
         template: action-tmpl
         arguments:
           parameters:
           - name: URL
-            value: "http://{{inputs.parameters.APP_PROXY_SERVER}}/api/{{inputs.parameters.ACTION_ENDPOINT}}"
+            value: "http://{{ inputs.parameters.APP_PROXY_SERVER }}/api/{{ inputs.parameters.ACTION_ENDPOINT }}"
           artifacts:
           - name: BODY
             raw:
-              data: "{{inputs.parameters.ACTION_BODY}}"
+              data: "{{ inputs.parameters.ACTION_BODY }}"
 
       - name: fail
         depends: "pre-action.Skipped && action.Skipped"
         template: fail-tmpl
 
-      - name: suspend
+      - name: merge-args
         depends: "(pre-action.Succeeded && !action.Failed) || action.Succeeded"
+        template: merge-args-tmpl
+        arguments:
+          artifacts:
+          - name: ARGS
+            raw:
+              data: "{{ inputs.parameters.ARGS }}"
+          - name: PRE_ACTION_RESULT
+            raw:
+              data2: '{ "pre-action-result": {{= tasks["pre-action"].status == "Succeeded" ? jsonpath(tasks["pre-action"].outputs.parameters.RESULT, "$.status.outputs") : "" }} }'
+              data: '{ "pre-action-result": {{= tasks["pre-action"].status == "Succeeded" ? tasks["pre-action"].outputs.parameters.RESULT : "" }} }'
+          - name: ACTION_RESULT
+            raw:
+              data: "{{= tasks.action.status == 'Succeeded' ? tasks.action.outputs.parameters.RESPONSE : '' }}"
+
+      - name: suspend
+        depends: "merge-args"
         template: suspend-tmpl
 
-  - name: stop-workflow-tmpl
+  - name: workflow-tmpl
     inputs:
       parameters:
-      - name: PARENT_LABEL_SELECTOR
-      - name: MESSAGE
-    script:
-      name: main
-      image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
-      env:
-      - name: LABEL_SELECTOR
-        value: "{{inputs.parameters.PARENT_LABEL_SELECTOR}}"
-      - name: MESSAGE
-        value: "{{inputs.parameters.MESSAGE}}"
-      command:
-      - sh
-      source: |
-        echo "selector: ${LABEL_SELECTOR}"
-        echo "message: ${MESSAGE}"
-        argo stop \
-          --selector "${LABEL_SELECTOR}" \
-          --message "${MESSAGE}"
+      - name: TEMPLATE_NAME
+      artifacts:
+      - name: ARGS
+    outputs:
+      parameters:
+      - name: RESULT
+        valueFrom:
+          expression: "steps.get-workflow.outputs.parameters.RESULT"
+    steps:
+    - - name: submit-workflow
+        template: submit-workflow-tmpl
+        arguments:
+          parameters:
+          - name: TEMPLATE_NAME
+            value: "{{ inputs.parameters.TEMPLATE_NAME }}"
+          artifacts:
+          - name: ARGS
+            from: "{{ inputs.artifacts.ARGS }}"
+
+    - - name: get-workflow
+        template: get-workflow-tmpl
+        arguments:
+          parameters:
+          - name: WORKFLOW_NAME
+            value: "{{= jsonpath(steps['submit-workflow'].outputs.parameters.RESULT, '$.metadata.name') }}"
 
   - name: submit-workflow-tmpl
     inputs:
@@ -249,23 +271,65 @@ spec:
       name: submit
       image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
       env:
+      - name: TEMPLATE_NAME
+        value: "{{ inputs.parameters.TEMPLATE_NAME }}"
       - name: PARENT_UID
-        value: "{{workflow.uid}}"
+        value: "{{ workflow.uid }}"
       - name: APP_LABEL
-        value: "{{workflow.labels.codefresh\u002eio/app}}"
+        value: "{{ workflow.labels.codefresh\u002eio/app }}"
       - name: PROMOTION_FLOW_LABEL
-        value: "{{workflow.labels.codefresh\u002eio/promotion-flow}}"
+        value: "{{ workflow.labels.codefresh\u002eio/promotion-flow }}"
       - name: RELEASE_LABEL
-        value: "{{workflow.labels.codefresh\u002eio/release}}"
+        value: "{{ workflow.labels.codefresh\u002eio/release }}"
       command:
       - sh
       source: |
         argo submit \
-          --from wftmpl/{{inputs.parameters.TEMPLATE_NAME}} \
+          --from wftmpl/${TEMPLATE_NAME} \
           --parameter-file /tmp/args.json \
           --labels codefresh.io/submit-wf-parent-uid=${PARENT_UID},codefresh.io/workflow-origin="promotion",codefresh.io/app=${APP_LABEL},codefresh.io/promotion-flow=${PROMOTION_FLOW_LABEL},codefresh.io/release=${RELEASE_LABEL} \
           --wait \
           --output=json > /tmp/result.json
+
+  - name: get-workflow-tmpl
+    inputs:
+      parameters:
+      - name: WORKFLOW_NAME
+    outputs:
+      parameters:
+      - name: RESULT
+        valueFrom:
+          path: /tmp/result.json
+    script:
+      name: get
+      image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
+      env:
+      - name: WORKFLOW_NAME
+        value: "{{ inputs.parameters.WORKFLOW_NAME }}"
+      command:
+      - sh
+      source: |
+        argo get ${WORKFLOW_NAME} --output json > /tmp/result.json
+
+  - name: stop-workflow-tmpl
+    inputs:
+      parameters:
+      - name: PARENT_LABEL_SELECTOR
+      - name: MESSAGE
+    script:
+      name: main
+      image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
+      env:
+      - name: LABEL_SELECTOR
+        value: "{{ inputs.parameters.PARENT_LABEL_SELECTOR }}"
+      - name: MESSAGE
+        value: "{{ inputs.parameters.MESSAGE }}"
+      command:
+      - sh
+      source: |
+        argo stop \
+          --selector "${LABEL_SELECTOR}" \
+          --message "${MESSAGE}"
 
   - name: action-tmpl
     inputs:
@@ -288,12 +352,12 @@ spec:
       image: quay.io/curl/curl-base:8.6.0
       env:
       - name: URL
-        value: "{{inputs.parameters.URL}}"
+        value: "{{ inputs.parameters.URL }}"
       - name: TOKEN
         valueFrom:
           secretKeyRef:
-            name: "{{inputs.parameters.TOKEN_SECRET}}"
-            key: "{{inputs.parameters.TOKEN_SECRET_KEY}}"
+            name: "{{ inputs.parameters.TOKEN_SECRET }}"
+            key: "{{ inputs.parameters.TOKEN_SECRET_KEY }}"
       command:
       - sh
       source: |
@@ -321,62 +385,27 @@ spec:
           exit $STATUS_CODE
         fi
 
-  - name: argocd-sync-tmpl
+  - name: merge-args-tmpl
     inputs:
-      parameters:
-      - name: ARGOCD_SERVER
-      - name: APP
-      - name: TOKEN_SECRET
-        default: argocd-token
-      - name: TOKEN_SECRET_KEY
-        default: token
+      artifacts:
+      - name: ARGS
+        path: /tmp/args.json
+      - name: PRE_ACTION_RESULT
+        path: /tmp/pre_action_result.json
+      - name: ACTION_RESULT
+        path: /tmp/action_result.json
     script:
-      name: sync
-      image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
-      env:
-      - name: ARGOCD_SERVER
-        value: "{{inputs.parameters.ARGOCD_SERVER}}"
-      - name: ARGOCD_AUTH_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: "{{inputs.parameters.TOKEN_SECRET}}"
-            key: "{{inputs.parameters.TOKEN_SECRET_KEY}}"
-      - name: ARGOCD_OPTS
-        value: --grpc-web --plaintext
-      command:
-      - sh
-      source:
-        argocd app sync {{inputs.parameters.APP}} --prune --timeout 120
+      image: ghcr.io/jqlang/jq:1.7.1
+      args:
+      - --slurp
+      - 'reduce .[] as $item ({}; . * $item)'
+      - /tmp/args.json
+      - /tmp/pre_action_result.json
+      - /tmp/action_result.json
+      - --sort-keys
+      - --monochrome-output
 
-  - name: argocd-wait-tmpl
-    inputs:
-      parameters:
-      - name: ARGOCD_SERVER
-      - name: APP
-      - name: FLAGS
-      - name: TOKEN_SECRET
-        default: argocd-token
-      - name: TOKEN_SECRET_KEY
-        default: token
-    script:
-      name: wait
-      image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
-      env:
-      - name: ARGOCD_SERVER
-        value: "{{inputs.parameters.ARGOCD_SERVER}}"
-      - name: ARGOCD_AUTH_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: "{{inputs.parameters.TOKEN_SECRET}}"
-            key: "{{inputs.parameters.TOKEN_SECRET_KEY}}"
-      - name: ARGOCD_OPTS
-        value: --grpc-web --plaintext
-      command:
-      - sh
-      source: |
-        argocd app wait {{inputs.parameters.APP}} {{inputs.parameters.FLAGS}}
-
-  - name: argocd-app-get-tmpl
+  - name: argocd-get-tmpl
     inputs:
       parameters:
       - name: ARGOCD_SERVER
@@ -394,26 +423,88 @@ spec:
       name: app-get
       image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
       env:
+      - name: APP_NAME
+        value: "{{ inputs.parameters.APP }}"
       - name: ARGOCD_SERVER
-        value: "{{inputs.parameters.ARGOCD_SERVER}}"
+        value: "{{ inputs.parameters.ARGOCD_SERVER }}"
       - name: ARGOCD_AUTH_TOKEN
         valueFrom:
           secretKeyRef:
-            name: "{{inputs.parameters.TOKEN_SECRET}}"
-            key: "{{inputs.parameters.TOKEN_SECRET_KEY}}"
+            name: "{{ inputs.parameters.TOKEN_SECRET }}"
+            key: "{{ inputs.parameters.TOKEN_SECRET_KEY }}"
       - name: ARGOCD_OPTS
         value: --grpc-web --plaintext
       command:
       - sh
       source: |
-        argocd app get {{inputs.parameters.APP}} -o json > /tmp/result.json
+        argocd app get ${APP_NAME} --output json > /tmp/result.json
+
+  - name: argocd-sync-tmpl
+    inputs:
+      parameters:
+      - name: ARGOCD_SERVER
+      - name: APP
+      - name: TOKEN_SECRET
+        default: argocd-token
+      - name: TOKEN_SECRET_KEY
+        default: token
+    script:
+      name: sync
+      image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
+      env:
+      - name: APP_NAME
+        value: "{{ inputs.parameters.APP }}"
+      - name: ARGOCD_SERVER
+        value: "{{ inputs.parameters.ARGOCD_SERVER }}"
+      - name: ARGOCD_AUTH_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: "{{ inputs.parameters.TOKEN_SECRET }}"
+            key: "{{ inputs.parameters.TOKEN_SECRET_KEY }}"
+      - name: ARGOCD_OPTS
+        value: --grpc-web --plaintext
+      command:
+      - sh
+      source: |
+        argocd app sync ${APP_NAME} --prune --timeout 120
+
+  - name: argocd-wait-tmpl
+    inputs:
+      parameters:
+      - name: ARGOCD_SERVER
+      - name: APP
+      - name: FLAGS
+      - name: TOKEN_SECRET
+        default: argocd-token
+      - name: TOKEN_SECRET_KEY
+        default: token
+    script:
+      name: wait
+      image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
+      env:
+      - name: APP_NAME
+        value: "{{ inputs.parameters.APP }}"
+      - name: ARGOCD_SERVER
+        value: "{{ inputs.parameters.ARGOCD_SERVER }}"
+      - name: ARGOCD_AUTH_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: "{{ inputs.parameters.TOKEN_SECRET }}"
+            key: "{{ inputs.parameters.TOKEN_SECRET_KEY }}"
+      - name: ARGOCD_OPTS
+        value: --grpc-web --plaintext
+      - name: FLAGS
+        value: "{{ inputs.parameters.FLAGS }}"
+      command:
+      - sh
+      source: |
+        argocd app wait ${APP_NAME} ${FLAGS}
 
   - name: fail-tmpl
     container:
       image: alpine:latest
       command:
       - sh
-      - -c
       args:
       - exit 1
 

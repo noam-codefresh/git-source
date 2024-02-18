@@ -11,9 +11,16 @@ spec:
   entrypoint: echo
   templates:
   - name: echo
+    outputs:
+      parameters:
+      - name: RESULT
+        valueFrom:
+          path: /tmp/result
+        globalName: RESULT
     script:
       image: alpine
       command:
       - sh
       source: |
         echo "pre action {{ workflow.parameters.APP_NAME }}"
+        
