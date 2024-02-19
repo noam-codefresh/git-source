@@ -56,7 +56,7 @@ spec:
     dag:
       tasks:
       - name: stop-running-promotions
-        template: stop-workflow-tmpl
+        template: terminate-workflow-tmpl
 
       - name: run-action
         depends: "stop-running-promotions"
@@ -134,7 +134,8 @@ spec:
             value: "{{ inputs.parameters.LABELS }}"
           artifacts:
           - name: ARGS
-            from: "{{ tasks.run-action.outputs.parameters.RESULT }}"
+            raw:
+              data: "{{ tasks.run-action.outputs.parameters.RESULT }}"
 
       - name: final-wait-app
         depends: "post-action"
@@ -217,20 +218,25 @@ spec:
           artifacts:
           - name: ARGS
             raw:
-              data: "{{ inputs.parameters.ARGS }}"
+              data: >-
+                {
+                  "ARGS": {{ inputs.parameters.ARGS }}
+                }
           - name: PRE_ACTION_RESULT
             raw:
               data: >-
                 {
                   "PRE_ACTION_RESULT": {{= (tasks["get-pre-action-result"].status == "Succeeded" && "outputs" in jsonpath(tasks["get-pre-action-result"].outputs.parameters.RESULT, "$.status"))
                     ? toJson(jsonpath(tasks["get-pre-action-result"].outputs.parameters.RESULT, "$.status.outputs"))
-                    : '""' }}
+                    : '{}' }}
                 }
           - name: ACTION_RESULT
             raw:
               data: >-
                 {
-                  "ACTION_RESULT": {{= tasks.action.status == 'Succeeded' ? tasks.action.outputs.parameters.RESPONSE : '""' }}
+                  "ACTION_RESULT": {{= tasks.action.status == 'Succeeded'
+                    ? tasks.action.outputs.parameters.RESPONSE
+                    : '{}' }}
                 }
 
       - name: suspend
@@ -299,7 +305,7 @@ spec:
       source: |
         argo get ${WORKFLOW_NAME} --output json > /tmp/result.json
 
-  - name: stop-workflow-tmpl
+  - name: terminate-workflow-tmpl
     script:
       name: main
       image: quay.io/codefreshplugins/argo-hub-argo-workflows-argo-workflow-cli:0.0.4-main
@@ -312,15 +318,12 @@ spec:
         value: "{{ workflow.labels.codefresh\u002eio/promotion-flow }}"
       - name: RELEASE_LABEL
         value: "{{ workflow.labels.codefresh\u002eio/release }}"
-      - name: MESSAGE
-        value: "stopping old promotion workflow, after starting release \"{{ workflow.labels.codefresh\u002eio/release }}\""
       command:
       - sh
       source: |
         LABEL_SELECTOR="codefresh.io/app-name==${APP_NAME_LABEL},codefresh.io/app-namespace=${APP_NAMESPACE_LABEL},codefresh.io/promotion-flow==${PROMOTION_FLOW_LABEL},codefresh.io/release!=${RELEASE_LABEL},workflows.argoproj.io/phase!=Succeeded,workflows.argoproj.io/phase!=Failed,workflows.argoproj.io/phase!=Error"
-        argo stop \
-          --selector "${LABEL_SELECTOR}" \
-          --message "${MESSAGE}"
+        argo terminate \
+          --selector "${LABEL_SELECTOR}"
 
   - name: action-tmpl
     inputs:

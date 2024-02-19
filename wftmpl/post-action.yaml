@@ -7,23 +7,31 @@ metadata:
 spec:
   arguments:
     parameters:
+    - name: ARGS
     - name: PRE_ACTION_RESULT
     - name: ACTION_RESULT
-    - name: APP_NAME
   entrypoint: echo
   templates:
   - name: echo
     inputs:
       parameters:
+      - name: ARGS
+      - name: PRE_ACTION_RESULT
       - name: ACTION_RESULT
     script:
       image: alpine
       env:
+      - name: APP_NAME
+        value: "{{= jsonpath(inputs.parameters.ARGS, '$.APP_NAME') }}"
+      - name: APP_NAMESPACE
+        value: "{{= jsonpath(inputs.parameters.ARGS, '$.APP_NAMESPACE') }}"
+      - name: PRE_ACTION_RESULT
+        value: "{{= jsonpath(inputs.parameters.PRE_ACTION_RESULT, '$.parameters[?(@.name == \"RESULT\")][0].value') }}"
       - name: SHA
-        value: "{{= jsonpath(inputs.parameters.ACTION_RESULT, 'sha') }}"
+        value: "{{= jsonpath(inputs.parameters.ACTION_RESULT, '$.sha') }}"
       - name: COMMITER_NAME
-        value: "{{= jsonpath(inputs.parameters.ACTION_RESULT, 'committer.name') }}"
+        value: "{{= jsonpath(inputs.parameters.ACTION_RESULT, '$.committer.name') }}"
       command:
       - sh
       source: |
-        echo "post action app, sha: ${SHA}, commiter: ${COMMITER_NAME}"
+        echo "post action app for \"${APP_NAMESPACE}/${APP_NAME}\", pre-action-result: \"${PRE_ACTION_RESULT}\", sha: \"${SHA}\", commiter: \"${COMMITER_NAME}\""

@@ -5,10 +5,10 @@ metadata:
   labels:
     codefresh.io/promotion: 'true'
 spec:
+  entrypoint: echo
   arguments:
     parameters:
     - name: APP_NAME
-  entrypoint: echo
   templates:
   - name: echo
     inputs:
@@ -24,7 +24,7 @@ spec:
       image: alpine
       env:
       - name: APP_NAME
-        value: "{{ inputs.paramaters.APP_NAME }}"
+        value: "{{ inputs.parameters.APP_NAME }}"
       command:
       - sh
       source: |

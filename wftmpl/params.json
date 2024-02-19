@@ -9,5 +9,5 @@
     "POST_ACTION_ONLY": "false",
     "POST_ACTION_TMPL": "post-action",
     "ARGS": "{\"APP_NAME\":\"loans-qa\", \"APP_NAMESPACE\": \"runtime\"}",
-    "LABELS": "codefresh.io/app=loans-staging,codefresh.io/anotehr-label=another-value"
+    "LABELS": "codefresh.io/app=loans-staging,codefresh.io/another-label=another-value"
 }
