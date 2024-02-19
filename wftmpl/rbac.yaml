@@ -44,18 +44,6 @@ rules:
   - workflowtaskresults
   verbs:
   - create
-- apiGroups:
-  - argoproj.io
-  resources:
-  - workflowtasksets
-  verbs:
-  - list
-  - watch
-- apiGroups:
-  - argoproj.io
-  resources:
-  - workflowtasksets/status
-  verbs:
   - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
