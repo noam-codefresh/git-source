@@ -11,6 +11,9 @@ spec:
   entrypoint: echo
   templates:
   - name: echo
+    inputs:
+      parameters:
+      - name: APP_NAME
     outputs:
       parameters:
       - name: RESULT
@@ -19,8 +22,11 @@ spec:
         globalName: RESULT
     script:
       image: alpine
+      env:
+      - name: APP_NAME
+        value: "{{ inputs.paramaters.APP_NAME }}"
       command:
       - sh
       source: |
-        echo "pre action {{ workflow.parameters.APP_NAME }}"
-        
+        echo "pre action ${APP_NAME}" > /tmp/result
+        cat /tmp/result        

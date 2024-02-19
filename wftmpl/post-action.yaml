@@ -7,13 +7,23 @@ metadata:
 spec:
   arguments:
     parameters:
-    - name: sha
+    - name: PRE_ACTION_RESULT
+    - name: ACTION_RESULT
+    - name: APP_NAME
   entrypoint: echo
   templates:
   - name: echo
+    inputs:
+      parameters:
+      - name: ACTION_RESULT
     script:
       image: alpine
+      env:
+      - name: SHA
+        value: "{{= jsonpath(inputs.parameters.ACTION_RESULT, 'sha') }}"
+      - name: COMMITER_NAME
+        value: "{{= jsonpath(inputs.parameters.ACTION_RESULT, 'committer.name') }}"
       command:
       - sh
       source: |
-        echo "post action app {{ workflow.parameters.sha }}"
+        echo "post action app, sha: ${SHA}, commiter: ${COMMITER_NAME}"
