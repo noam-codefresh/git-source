@@ -213,26 +213,19 @@ spec:
           artifacts:
           - name: ARGS
             raw:
-              data: >-
-                {
-                  "ARGS": {{ inputs.parameters.ARGS }}
-                }
+              data: "{{ inputs.parameters.ARGS }}"
           - name: PRE_ACTION_RESULT
             raw:
               data: >-
-                {
-                  "PRE_ACTION_RESULT": {{= (tasks["get-pre-action-result"].status == "Succeeded" && "outputs" in jsonpath(tasks["get-pre-action-result"].outputs.parameters.RESULT, "$.status"))
-                    ? toJson(jsonpath(tasks["get-pre-action-result"].outputs.parameters.RESULT, "$.status.outputs"))
-                    : '{}' }}
-                }
+                {{= (tasks["get-pre-action-result"].status == "Succeeded" && "outputs" in jsonpath(tasks["get-pre-action-result"].outputs.parameters.RESULT, "$.status"))
+                  ? toJson(jsonpath(tasks["get-pre-action-result"].outputs.parameters.RESULT, "$.status.outputs"))
+                  : '{}' }}
           - name: ACTION_RESULT
             raw:
               data: >-
-                {
-                  "ACTION_RESULT": {{= tasks.action.status == 'Succeeded'
-                    ? tasks.action.outputs.parameters.RESPONSE
-                    : '{}' }}
-                }
+                {{= tasks.action.status == 'Succeeded'
+                  ? tasks.action.outputs.parameters.RESPONSE
+                  : '{}' }}
 
       - name: suspend
         depends: "merge-args.Succeeded"
