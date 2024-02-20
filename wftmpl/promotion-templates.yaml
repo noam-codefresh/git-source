@@ -20,13 +20,12 @@ spec:
   entrypoint: promotion
   arguments:
     parameters:
-    - name: APP_NAME
     - name: APP_NAMESPACE
-    - name: APP_PROXY_SERVER
+    - name: APP_NAME
     - name: ARGOCD_SERVER
     - name: POST_ACTION_ONLY
       value: "false"
-    - name: ACTION_ENDPOINT
+    - name: ACTION_URL
       value: ""
     - name: ACTION_BODY
       value: ""
@@ -42,12 +41,11 @@ spec:
   - name: promotion
     inputs:
       parameters:
-      - name: APP_NAME
       - name: APP_NAMESPACE
-      - name: APP_PROXY_SERVER
+      - name: APP_NAME
       - name: ARGOCD_SERVER
       - name: POST_ACTION_ONLY
-      - name: ACTION_ENDPOINT
+      - name: ACTION_URL
       - name: ACTION_BODY
       - name: PRE_ACTION_TMPL
       - name: POST_ACTION_TMPL
@@ -64,10 +62,8 @@ spec:
         template: action-dag-tmpl
         arguments:
           parameters:
-          - name: APP_PROXY_SERVER
-            value: "{{ inputs.parameters.APP_PROXY_SERVER }}"
-          - name: ACTION_ENDPOINT
-            value: "{{ inputs.parameters.ACTION_ENDPOINT }}"
+          - name: ACTION_URL
+            value: "{{ inputs.parameters.ACTION_URL }}"
           - name: ACTION_BODY
             value: "{{ inputs.parameters.ACTION_BODY }}"
           - name: PRE_ACTION_TMPL
@@ -156,8 +152,7 @@ spec:
   - name: action-dag-tmpl
     inputs:
       parameters:
-      - name: APP_PROXY_SERVER
-      - name: ACTION_ENDPOINT
+      - name: ACTION_URL
         default: ""
       - name: ACTION_BODY
         default: ""
@@ -195,13 +190,13 @@ spec:
             value: "{{= jsonpath(tasks['pre-action'].outputs.parameters.RESULT, '$.metadata.name') }}"
 
       - name: action
-        when: "{{= inputs.parameters.ACTION_ENDPOINT != '' }}"
+        when: "{{= inputs.parameters.ACTION_URL != '' }}"
         depends: "pre-action.Succeeded || pre-action.Skipped"
         template: action-tmpl
         arguments:
           parameters:
           - name: URL
-            value: "http://{{ inputs.parameters.APP_PROXY_SERVER }}/api/{{ inputs.parameters.ACTION_ENDPOINT }}"
+            value: "{{ inputs.parameters.ACTION_URL }}"
           artifacts:
           - name: BODY
             raw:
