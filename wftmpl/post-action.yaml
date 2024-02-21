@@ -7,31 +7,39 @@ metadata:
 spec:
   arguments:
     parameters:
-    - name: ARGS
-    - name: PRE_ACTION_RESULT
-    - name: ACTION_RESULT
+    - name: APP_NAMESPACE
+    - name: APP_NAME
+    - name: REPO_URL
+    - name: BRANCH
+    - name: COMMIT_SHA
+    - name: COMMIT_MESSAGE
+    - name: COMMIT_AUTHOR
+    - name: COMMIT_DATE
+      value: ""
+    - name: COMMIT_TAGS
+      value: ""
   entrypoint: echo
   templates:
   - name: echo
     inputs:
       parameters:
-      - name: ARGS
-      - name: PRE_ACTION_RESULT
-      - name: ACTION_RESULT
+      - name: APP_NAMESPACE
+      - name: APP_NAME
+      - name: REPO_URL
+      - name: BRANCH
+      - name: COMMIT_SHA
+      - name: COMMIT_MESSAGE
+      - name: COMMIT_AUTHOR
+      - name: COMMIT_DATE
     script:
       image: alpine
-      env:
-      - name: APP_NAME
-        value: "{{= jsonpath(inputs.parameters.ARGS, '$.APP_NAME') }}"
-      - name: APP_NAMESPACE
-        value: "{{= jsonpath(inputs.parameters.ARGS, '$.APP_NAMESPACE') }}"
-      - name: PRE_ACTION_RESULT
-        value: "{{= jsonpath(inputs.parameters.PRE_ACTION_RESULT, '$.parameters[?(@.name == \"RESULT\")][0].value') }}"
-      - name: SHA
-        value: "{{= jsonpath(inputs.parameters.ACTION_RESULT, '$.sha') }}"
-      - name: COMMITER_NAME
-        value: "{{= jsonpath(inputs.parameters.ACTION_RESULT, '$.committer.name') }}"
       command:
       - sh
       source: |
-        echo "post action app for \"${APP_NAMESPACE}/${APP_NAME}\", pre-action-result: \"${PRE_ACTION_RESULT}\", sha: \"${SHA}\", commiter: \"${COMMITER_NAME}\""
+        echo "post action for \"{{ inputs.parameters.APP_NAMESPACE }}/{{ inputs.parameters.A__NAME }}\""
+        echo "repoUrl: {{ inputs.parameters.REPO_URL }}, branch: {{ inputs.parameters.BRANCH }}"
+        echo "commit {{ inputs.parameters.COMMIT_SHA }}"
+        echo "Author: {{ inputs.parameters.COMMIT_AUTHOR }}"
+        echo "Date:   {{ inputs.parameters.COMMIT_DATE }}"
+        echo ""
+        echo "    {{ inputs.parameters.COMMIT_MESSAGE }}"

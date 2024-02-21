@@ -8,12 +8,18 @@ spec:
   entrypoint: echo
   arguments:
     parameters:
+    - name: APP_NAMESPACE
     - name: APP_NAME
+    - name: REPO_URL
+    - name: BRANCH
   templates:
   - name: echo
     inputs:
       parameters:
+      - name: APP_NAMESPACE
       - name: APP_NAME
+      - name: REPO_URL
+      - name: BRANCH
     outputs:
       parameters:
       - name: RESULT
@@ -22,11 +28,9 @@ spec:
         globalName: RESULT
     script:
       image: alpine
-      env:
-      - name: APP_NAME
-        value: "{{ inputs.parameters.APP_NAME }}"
       command:
       - sh
       source: |
-        echo "pre action ${APP_NAME}" > /tmp/result
-        cat /tmp/result        
+        echo "pre action for \"{{ inputs.parameters.APP_NAMESPACE }}/{{ inputs.parameters.APP_NAME }}\""
+        echo "repoUrl: {{ inputs.parameters.REPO_URL }}, branch: {{ inputs.parameters.BRANCH }}"
+        echo "{\"PRE_ACTION_RESULT\": "\Success\""}" > /tmp/result
