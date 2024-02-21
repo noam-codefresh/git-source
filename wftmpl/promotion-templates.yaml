@@ -2,6 +2,9 @@ apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
   name: promotion-templates
+  labels:
+    codefresh.io/workflow-origin: promotion
+    codefresh.io/promotion-stage: promotion-wrapper
 spec:
   serviceAccountName: promotion-templates
   hooks:
@@ -53,7 +56,7 @@ spec:
       - name: LABELS
     dag:
       tasks:
-      - name: stop-running-promotions
+      - name: terminate-running-promotions
         template: terminate-workflow-tmpl
 
       - name: run-action
@@ -127,11 +130,14 @@ spec:
           - name: TEMPLATE_NAME
             value: "{{ inputs.parameters.POST_ACTION_TMPL }}"
           - name: LABELS
-            value: "{{ inputs.parameters.LABELS }}"
+            value: "codefresh.io/promotion-stage=post-action,{{ inputs.parameters.LABELS }}"
           artifacts:
           - name: ARGS
             raw:
-              data: "{{ tasks.run-action.outputs.parameters.RESULT }}"
+              data: >-
+                {{= tasks["run-action"].status == "Skipped"
+                  ? inputs.parameters.ARGS
+                  : tasks["run-action"].outputs.parameters.RESULT }}
 
       - name: final-wait-app
         depends: "post-action"
@@ -175,7 +181,7 @@ spec:
           - name: TEMPLATE_NAME
             value: "{{ inputs.parameters.PRE_ACTION_TMPL }}"
           - name: LABELS
-            value: "{{ inputs.parameters.LABELS }}"
+            value: "codefresh.io/promotion-stage=pre-action,{{ inputs.parameters.LABELS }}"
           artifacts:
           - name: ARGS
             raw:
@@ -202,7 +208,7 @@ spec:
             raw:
               data: "{{ inputs.parameters.ACTION_BODY }}"
 
-      - name: fail
+      - name: fail-if-skipped
         depends: "pre-action.Skipped && action.Skipped"
         template: fail-tmpl
 

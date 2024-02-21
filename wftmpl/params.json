@@ -7,6 +7,6 @@
     "ACTION_BODY": "{\"srcAppId\": {\"runtime\": \"ngrok-noam\", \"namespace\": \"runtime\", \"name\": \"loans-qa\"}, \"destAppId\": {\"runtime\": \"ngrok-noam\", \"namespace\": \"runtime\", \"name\": \"loans-staging\"}, \"message\": \"commit message\"}",
     "POST_ACTION_ONLY": "false",
     "POST_ACTION_TMPL": "post-action",
-    "ARGS": "{\"APP_NAME\":\"loans-qa\", \"APP_NAMESPACE\": \"runtime\"}",
-    "LABELS": "codefresh.io/app=loans-staging,codefresh.io/another-label=another-value"
+    "ARGS": "{\"APP_NAME\":\"loans-qa\", \"APP_NAMESPACE\": \"runtime\", \"REPO_URL\": \"https://github.com/noam-codefresh/git-source.git\", \"BRANCH\": \"main\", \"COMMIT_SHA\": \"1234\", \"COMMIT_MESSAGE\": \"some commit message\", \"COMMIT_AUTHOR\": \"bill gates\"}",
+    "LABELS": "codefresh.io/another-label=another-value"
 }
