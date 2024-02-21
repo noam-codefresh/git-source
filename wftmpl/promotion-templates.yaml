@@ -60,7 +60,7 @@ spec:
         template: terminate-workflow-tmpl
 
       - name: run-action
-        depends: "stop-running-promotions"
+        depends: "terminate-running-promotions"
         when: "{{= inputs.parameters.POST_ACTION_ONLY != 'true' }}"
         template: action-dag-tmpl
         arguments:
