@@ -2,9 +2,6 @@ apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
   name: promotion-templates
-  labels:
-    codefresh.io/workflow-origin: promotion
-    codefresh.io/promotion-stage: promotion-wrapper
 spec:
   serviceAccountName: promotion-templates
   hooks:
@@ -61,7 +58,7 @@ spec:
 
       - name: run-action
         depends: "terminate-running-promotions"
-        when: "{{= inputs.parameters.POST_ACTION_ONLY != 'true' }}"
+        when: "{{= inputs.parameters.POST_ACTION_ONLY != 'true' }}" # expr in when
         template: action-dag-tmpl
         arguments:
           parameters:
@@ -92,7 +89,7 @@ spec:
 
       - name: sync-app
         depends: "get-app"
-        when: "{{= !('automated' in jsonpath(tasks['get-app'].outputs.parameters.RESULT, '$.spec.syncPolicy')) }}"
+        when: "{{= !('automated' in jsonpath(tasks['get-app'].outputs.parameters.RESULT, '$.spec.syncPolicy')) }}" # expr in when
         arguments:
           parameters:
           - name: ARGOCD_SERVER
@@ -123,7 +120,7 @@ spec:
 
       - name: post-action
         depends: "sync-app.Skipped || wait-app.Succeeded"
-        when: "{{= inputs.parameters.POST_ACTION_TMPL != '' }}"
+        when: "{{= inputs.parameters.POST_ACTION_TMPL != '' }}" # expr in when
         template: submit-workflow-tmpl
         arguments:
           parameters:
@@ -134,7 +131,7 @@ spec:
           artifacts:
           - name: ARGS
             raw:
-              data: >-
+              data: >- # expr in arguments/artifacts
                 {{= tasks["run-action"].status == "Skipped"
                   ? inputs.parameters.ARGS
                   : tasks["run-action"].outputs.parameters.RESULT }}
@@ -193,10 +190,10 @@ spec:
         arguments:
           parameters:
           - name: WORKFLOW_NAME
-            value: "{{= jsonpath(tasks['pre-action'].outputs.parameters.RESULT, '$.metadata.name') }}"
+            value: "{{= jsonpath(tasks['pre-action'].outputs.parameters.RESULT, '$.metadata.name') }}" # expr in arguments/parameters
 
       - name: action
-        when: "{{= inputs.parameters.ACTION_URL != '' }}"
+        when: "{{= inputs.parameters.ACTION_URL != '' }}" # expr in when
         depends: "pre-action.Succeeded || pre-action.Skipped"
         template: action-tmpl
         arguments:
@@ -222,13 +219,13 @@ spec:
               data: "{{ inputs.parameters.ARGS }}"
           - name: PRE_ACTION_RESULT
             raw:
-              data: >-
+              data: >- # expr in arguments/artifacts
                 {{= (tasks["get-pre-action-result"].status == "Succeeded" && "outputs" in jsonpath(tasks["get-pre-action-result"].outputs.parameters.RESULT, "$.status"))
                   ? toJson(jsonpath(tasks["get-pre-action-result"].outputs.parameters.RESULT, "$.status.outputs"))
                   : '{}' }}
           - name: ACTION_RESULT
             raw:
-              data: >-
+              data: >- # expr in arguments/artifacts
                 {{= tasks.action.status == 'Succeeded'
                   ? tasks.action.outputs.parameters.RESPONSE
                   : '{}' }}
@@ -335,9 +332,13 @@ spec:
       - name: RESPONSE
         valueFrom:
           path: /tmp/response.json
+      - name: COMMIT_SHA
+        valueFrom:
+          path: /tmp/commit_sha
+        globalName: COMMIT_SHA
     script:
       name: curl
-      image: quay.io/curl/curl-base:8.6.0
+      image: quay.io/noam_codefresh/curl-base:8.6.0
       env:
       - name: URL
         value: "{{ inputs.parameters.URL }}"
@@ -372,6 +373,8 @@ spec:
           echo "error performing action in app-proxy, STATUS_CODE: ${STATUS_CODE}"
           exit $STATUS_CODE
         fi
+
+        jq '.COMMIT_SHA' /tmp/response.json > /tmp/commit_sha
 
   - name: merge-args-tmpl
     inputs:

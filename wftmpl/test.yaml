@@ -19,25 +19,33 @@ spec:
         value: "{{workflow.parameters.PRE_ACTION}}"
       - name: ACTION
         value: "{{workflow.parameters.ACTION}}"
+    # outputs:
+    #   parameters:
+    #   - name: SHA
+    #     valueFrom:
+    #       expression: "{{= tasks['test-output'].outputs.parameters.RESULT }}"
     dag:
       tasks:
-      - name: pre-run
-        template: action-dag-tmpl
-        arguments:
-          parameters:
-          - name: PRE_ACTION
-            value: "{{inputs.parameters.PRE_ACTION}}"
-          - name: ACTION
-            value: "{{inputs.parameters.ACTION}}"
+      - name: test-output
+        template: test-output-tmpl
 
-      - name: post-action
-        depends: "pre-run"
-        template: echo-tmpl
-        arguments:
-          artifacts:
-          - name: FILE
-            raw:
-              data: "{{tasks.pre-run.outputs.parameters.RESULT}}"
+      # - name: pre-run
+      #   template: action-dag-tmpl
+      #   arguments:
+      #     parameters:
+      #     - name: PRE_ACTION
+      #       value: "{{inputs.parameters.PRE_ACTION}}"
+      #     - name: ACTION
+      #       value: "{{inputs.parameters.ACTION}}"
+
+      # - name: post-action
+      #   depends: "pre-run"
+      #   template: echo-tmpl
+      #   arguments:
+      #     artifacts:
+      #     - name: FILE
+      #       raw:
+      #         data: "{{tasks.pre-run.outputs.parameters.RESULT}}"
 
   - name: action-dag-tmpl
     inputs:
@@ -79,6 +87,25 @@ spec:
       - name: suspend
         depends: "(pre-action.Succeeded && !action.Failed) || action.Succeeded"
         template: suspend-tmpl
+
+  - name: test-output-tmpl
+    inputs:
+      parameters:
+      - name: ARG
+        value: "9999"
+    outputs:
+      parameters:
+      - name: RESULT
+        valueFrom:
+          path: /tmp/result
+      - name: SHA
+        value: '{{= outputs.parameters.RESULT.path }}'
+    script:
+      image: alpine:latest
+      command:
+      - sh
+      source: |
+        echo "{\"COMMIT_SHA\": \"1234\"}" > /tmp/result
 
   - name: echo-tmpl
     inputs:
