@@ -3,13 +3,12 @@ kind: PromotionFlow
 metadata:
   name: base-flow
 spec:
-  triggerEnvironment: dev
+  triggerEnvironment: qa
   postTrigger: 'post-action'
   steps:
-
   - environment: staging
     dependsOn:
-    - dev
+    - qa
     policy:
       # preAction and postAction are *not* required
       preAction: 'pre-action'
