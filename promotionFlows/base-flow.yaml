@@ -4,23 +4,23 @@ metadata:
   name: base-flow
 spec:
   triggerEnvironment: dev
-  # postAction: 'bbb'
+  postTrigger: 'post-action'
   steps:
 
   - environment: staging
     dependsOn:
     - dev
     policy:
-      # preAction, preSync and PostSync are *not* required
-      # preSync is meaningless if the app is set to autoSync in argocd (will not run preSync)
-      preAction: 'aaa'
-      postAction: 'ccc'
+      # preAction and postAction are *not* required
+      preAction: 'pre-action'
+      postAction: 'post-action'
       # action is a required field
-      action: none # commit|pr|none
+      action: commit # commit|pr|none
 
   - environment: production
     dependsOn:
     - staging
     policy:
-      postAction: 'notify-slack'
+      preAction: 'pre-action'
+      postAction: 'post-action'
       action: commit # commit|pr|none
