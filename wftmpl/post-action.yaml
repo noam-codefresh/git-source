@@ -36,7 +36,7 @@ spec:
       command:
       - sh
       source: |
-        echo "post action for \"{{ inputs.parameters.APP_NAMESPACE }}/{{ inputs.parameters.A__NAME }}\""
+        echo "post action for \"{{ inputs.parameters.APP_NAMESPACE }}/{{ inputs.parameters.APP_NAME }}\""
         echo "repoUrl: {{ inputs.parameters.REPO_URL }}, branch: {{ inputs.parameters.BRANCH }}"
         echo "commit {{ inputs.parameters.COMMIT_SHA }}"
         echo "Author: {{ inputs.parameters.COMMIT_AUTHOR }}"
