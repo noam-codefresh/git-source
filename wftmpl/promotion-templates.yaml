@@ -339,6 +339,7 @@ spec:
     script:
       name: curl
       image: quay.io/noam_codefresh/curl-base:8.6.0
+      imagePullPolicy: Always
       env:
       - name: URL
         value: "{{ inputs.parameters.URL }}"
@@ -374,7 +375,7 @@ spec:
           exit $STATUS_CODE
         fi
 
-        jq '.COMMIT_SHA' /tmp/response.json > /tmp/commit_sha
+        jq -r '.COMMIT_SHA' /tmp/response.json > /tmp/commit_sha
 
   - name: merge-args-tmpl
     inputs:
