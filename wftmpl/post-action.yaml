@@ -43,3 +43,4 @@ spec:
         echo "Date:   {{ inputs.parameters.COMMIT_DATE }}"
         echo ""
         echo "    {{ inputs.parameters.COMMIT_MESSAGE }}"
+        echo ""
