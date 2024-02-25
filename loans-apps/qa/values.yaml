@@ -4,7 +4,7 @@ loans:
     tag: v2
     pullPolicy: Always
 
-  replicaCount: 2
+  replicaCount: 3
 
   resources:
     limits:
