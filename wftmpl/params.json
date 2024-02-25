@@ -4,7 +4,7 @@
     "ARGOCD_SERVER": "argo-cd-server",
     "PRE_ACTION_TMPL": "pre-action",
     "ACTION_URL": "http://cap-app-proxy:3017/api/promotions/commit",
-    "ACTION_BODY": "{\"srcAppId\": {\"runtime\": \"ngrok-noam\", \"namespace\": \"runtime\", \"name\": \"loans-qa\"}, \"destAppId\": {\"runtime\": \"ngrok-noam\", \"namespace\": \"runtime\", \"name\": \"loans-staging\"}, \"message\": \"commiting from manual submit\"}",
+    "ACTION_BODY": "{\"srcAppId\": {\"runtime\": \"ngrok-noam\", \"namespace\": \"runtime\", \"name\": \"loans-qa\"}, \"destAppId\": {\"runtime\": \"ngrok-noam\", \"namespace\": \"runtime\", \"name\": \"loans-staging\"}, \"message\": \"simulating task manually\"}",
     "POST_ACTION_ONLY": "false",
     "POST_ACTION_TMPL": "post-action",
     "ARGS": "{\"APP_NAME\":\"loans-staging\", \"APP_NAMESPACE\": \"runtime\", \"REPO_URL\": \"https://github.com/noam-codefresh/git-source.git\", \"BRANCH\": \"main\"}",
