@@ -312,7 +312,7 @@ spec:
       command:
       - sh
       source: |
-        LABEL_SELECTOR="codefresh.io/app-name==${APP_NAME_LABEL},codefresh.io/app-namespace=${APP_NAMESPACE_LABEL},codefresh.io/promotion-flow==${PROMOTION_FLOW_LABEL},codefresh.io/release!=${RELEASE_LABEL},workflows.argoproj.io/phase!=Succeeded,workflows.argoproj.io/phase!=Failed,workflows.argoproj.io/phase!=Error"
+        LABEL_SELECTOR="codefresh.io/app-name==${APP_NAME_LABEL},codefresh.io/app-namespace==${APP_NAMESPACE_LABEL},codefresh.io/promotion-flow==${PROMOTION_FLOW_LABEL},codefresh.io/release!=${RELEASE_LABEL},workflows.argoproj.io/phase!=Succeeded,workflows.argoproj.io/phase!=Failed,workflows.argoproj.io/phase!=Error"
         argo terminate \
           --selector "${LABEL_SELECTOR}"
 
