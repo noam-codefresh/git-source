@@ -12,7 +12,7 @@ spec:
     policy:
       # preAction and postAction are *not* required
       preAction: 'pre-action'
-      postAction: 'post-action-123'
+      postAction: 'post-action'
       # action is a required field
       action: commit # commit|pr|none
 
@@ -21,5 +21,5 @@ spec:
     - staging
     policy:
       preAction: 'pre-action'
-      postAction: 'post-action-456'
+      postAction: 'post-action'
       action: commit # commit|pr|none
