@@ -4,7 +4,7 @@ loans:
     tag: v2
     pullPolicy: Always
 
-  replicaCount: 2
+  replicaCount: 1
 
   resources:
     limits:
@@ -19,4 +19,4 @@ interest:
     repository: quay.io/noam_codefresh/interest
     tag: v2
 
-  replicaCount: 2
+  replicaCount: 1
