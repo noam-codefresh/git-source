@@ -411,6 +411,7 @@ spec:
       - name: RESULT
         valueFrom:
           path: /tmp/result.json
+        globalName: APP_RESULT
     script:
       name: app-get
       image: quay.io/codefreshplugins/argo-hub-workflows-argocd-versions-0.0.1-images-argocd-cli:main
