@@ -1,7 +1,8 @@
 loans:
   image:
     repository: quay.io/noam_codefresh/loans
-    tag: v1
+    tag: v3
+    pullPolicy: Always
 
   resources:
     limits:

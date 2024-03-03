@@ -7,7 +7,7 @@ server:
   port: https://prod-fe.server
   timeout: 30
   env:
-    SESSION_INTERVAL: 6000
+    SESSION_INTERVAL: 1500
     BATCH_SIZE: 25
 
 logging:
