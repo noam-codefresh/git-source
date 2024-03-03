@@ -16,7 +16,7 @@ spec:
       # action is a required field
       action: commit # commit|pr|none
 
-  - environment: production
+  - environment: prod
     dependsOn:
     - staging
     policy:
