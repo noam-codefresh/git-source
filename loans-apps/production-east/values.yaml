@@ -1,8 +1,7 @@
 loans:
   image:
     repository: quay.io/noam_codefresh/loans
-    tag: v1
-
+    tag: v2
 
   resources:
     limits:
@@ -15,4 +14,4 @@ loans:
 interest:
   image:
     repository: quay.io/noam_codefresh/interest
-    tag: v1
+    tag: v2
