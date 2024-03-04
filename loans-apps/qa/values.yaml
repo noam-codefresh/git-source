@@ -2,10 +2,8 @@ loans:
   image:
     repository: quay.io/noam_codefresh/loans
     tag: v2
-    pullPolicy: Always
 
   replicaCount: 1
-
   resources:
     limits:
       cpu: 50m
