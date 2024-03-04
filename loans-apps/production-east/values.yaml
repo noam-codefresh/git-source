@@ -1,7 +1,8 @@
 loans:
   image:
     repository: quay.io/noam_codefresh/loans
-    tag: v3
+    tag: v1
+
 
   resources:
     limits:
@@ -11,7 +12,7 @@ loans:
       cpu: 100m
       memory: 128Mi
 
-  interest:
-    image:
-      repository: quay.io/noam_codefresh/interest
-      tag: v1
+interest:
+  image:
+    repository: quay.io/noam_codefresh/interest
+    tag: v1

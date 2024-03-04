@@ -1,9 +1,9 @@
 loans:
   image:
     repository: quay.io/noam_codefresh/loans
-    tag: v3
+    tag: v1
 
-  replicaCount: 2
+  replicaCount: 1
   resources:
     limits:
       cpu: 50m
@@ -15,6 +15,6 @@ loans:
 interest:
   image:
     repository: quay.io/noam_codefresh/interest
-    tag: v3
+    tag: v1
 
-  replicaCount: 2
+  replicaCount: 1
