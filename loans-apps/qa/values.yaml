@@ -17,4 +17,4 @@ interest:
     repository: quay.io/noam_codefresh/interest
     tag: v3
 
-  replicaCount: 1
+  replicaCount: 2
