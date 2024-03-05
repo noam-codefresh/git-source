@@ -3,7 +3,7 @@ kind: WorkflowTemplate
 metadata:
   name: promotion-templates
 spec:
-  serviceAccountName: promotion-templates
+  serviceAccountName: gitops-operator-controller-manager
   hooks:
     exit:
       template: argocd-get-tmpl
