@@ -10,7 +10,7 @@ spec:
       arguments:
         parameters:
         - name: ARGOCD_SERVER
-          value: '{{ workflow.parameters.ARGOCD_SERVER }}'
+          value: "{{ workflow.parameters.ARGOCD_SERVER }}"
         - name: APP_NAME
           value: "{{ workflow.parameters.APP_NAME }}"
         - name: TOKEN_SECRET
