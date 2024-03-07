@@ -5,7 +5,7 @@ metadata:
   labels:
     codefresh.io/promotion: 'true'
 spec:
-  serviceAccountName: promotion-templates
+  serviceAccountName: promotion-template
   entrypoint: echo
   arguments:
     parameters:
