@@ -5,7 +5,7 @@ metadata:
   labels:
     codefresh.io/promotion: 'true'
 spec:
-  serviceAccountName: gitops-operator-controller-manager
+  serviceAccountName: promotion-templates
   entrypoint: echo
   arguments:
     parameters:
