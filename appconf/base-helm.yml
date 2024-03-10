@@ -10,7 +10,7 @@ spec:
   priority: 0
   versionSource:
     file: Chart.yaml
-    jsonPath: appVersion
+    jsonPath: "{.appVersion}"
   promotion:
     Chart.yaml:
       jsonPaths:
