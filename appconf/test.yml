@@ -1,0 +1,24 @@
+apiVersion: csdp.codefresh.io/v1
+kind: ApplicationConfiguration
+metadata:
+  name: test-stuff
+spec:
+  applicationSourceSelector:
+    matchLabels:
+      codefresh.io/product: gitops-platform
+  priority: 0
+  versionSource:
+    file: Chart.yaml
+    jsonPath: "{.dependencies[0].version}"
+  promotion:
+    Chart.yaml:
+      jsonPaths:
+      - $.appVersion
+      - $.version
+      - $.dependencies
+    values.yaml:
+      jsonPaths:
+      - $..image
+    requirements.yaml:
+      jsonPaths:
+      - "$.dependencies"

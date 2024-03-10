@@ -6,8 +6,9 @@ metadata:
     - resources-finalizer.argocd.argoproj.io/foreground
   labels:
     app: loans
-    codefresh.io/product: loans
+    acodefresh.io/product: loans
     env: qa
+    codefresh.io/product: gitops-platform
 spec:
   project: default
   source:
