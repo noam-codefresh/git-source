@@ -6,7 +6,7 @@ version: 1.0.0
 dependencies:
   - name: loans
     repository: oci://quay.io/codefresh/promotions-demo/charts
-    version: 1.0.0
+    version: 1.2.3
   - name: interest
     repository: oci://quay.io/codefresh/promotions-demo/charts
     version: 1.0.0
