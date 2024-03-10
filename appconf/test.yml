@@ -9,7 +9,7 @@ spec:
   priority: 100
   versionSource:
     file: Chart.yaml
-    jsonPath: "{.dependencies[0].version}"
+    jsonPath: "{.dependencies[0].name}"
   promotion:
     Chart.yaml:
       jsonPaths:
