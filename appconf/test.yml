@@ -6,7 +6,7 @@ spec:
   applicationSourceSelector:
     matchLabels:
       codefresh.io/product: gitops-platform
-  priority: 0
+  priority: 100
   versionSource:
     file: Chart.yaml
     jsonPath: "{.dependencies[0].version}"
