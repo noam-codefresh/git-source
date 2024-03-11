@@ -1,4 +1,4 @@
-apiVersion: csdp.codefresh.io/v1
+apiVersion:codefresh.io/v1beta1
 kind: PromotionFlow
 metadata:
   name: base-flow

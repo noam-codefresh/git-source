@@ -1,5 +1,5 @@
-# apiVersion: csdp.codefresh.io/v1
-# kind: ApplicationConfiguration
+# apiVersion:codefresh.io/v1beta1
+# kind: PromotionTemplate
 # metadata:
 #   name: loans-qa
 # spec:
