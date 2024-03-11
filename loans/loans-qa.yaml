@@ -8,7 +8,7 @@ metadata:
     app: loans
     acodefresh.io/product: loans
     env: qa
-    codefresh.io/product: gitops-platform
+    codefresh.io/product: loans
 spec:
   project: default
   source:
