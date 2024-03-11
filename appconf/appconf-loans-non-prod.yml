@@ -1,4 +1,4 @@
-# apiVersion:codefresh.io/v1beta1
+# apiVersion: codefresh.io/v1beta1
 # kind: PromotionTemplate
 # metadata:
 #   name: loans-non-prod
