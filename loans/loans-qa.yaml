@@ -22,7 +22,7 @@ spec:
     automated:
       prune: true
       selfHeal: true
-      allowEmpty: false
+      allowEmpty: true
     syncOptions:
       - PrunePropagationPolicy=foreground
       - Replace=false
