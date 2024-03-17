@@ -1,25 +1,25 @@
-apiVersion: codefresh.io/v1beta1
-kind: PromotionTemplate
-metadata:
-  name: base-helm
-spec:
-  applicationSourceSelector:
-    matchExpressions:
-    - key: codefresh.io/product
-      operator: Exists
-  priority: 0
-  versionSource:
-    file: Chart.yaml
-    jsonPath: "{.appVersion}"
-  promotion:
-    Chart.yaml:
-      jsonPaths:
-      - $.appVersion
-      - $.version
-      - $.dependencies
-    values.yaml:
-      jsonPaths:
-      - $..image
-    requirements.yaml:
-      jsonPaths:
-      - "$.dependencies"
+# apiVersion: codefresh.io/v1beta1
+# kind: PromotionTemplate
+# metadata:
+#   name: base-helm
+# spec:
+#   applicationSourceSelector:
+#     matchExpressions:
+#     - key: codefresh.io/product
+#       operator: Exists
+#   priority: 0
+#   versionSource:
+#     file: Chart.yaml
+#     jsonPath: "{.appVersion}"
+#   promotion:
+#     Chart.yaml:
+#       jsonPaths:
+#       - $.appVersion
+#       - $.version
+#       - $.dependencies
+#     values.yaml:
+#       jsonPaths:
+#       - $..image
+#     requirements.yaml:
+#       jsonPaths:
+#       - "$.dependencies"
