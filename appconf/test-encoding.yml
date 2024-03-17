@@ -1,0 +1,22 @@
+apiVersion: csdp.codefresh.io/v1
+kind: ApplicationConfiguration
+metadata:
+  name: test-encoding
+spec:
+  applicationSourceSelector:
+    matchExpressions:
+    - key: app.ekubernetes.io/instance
+      operator: Exists
+  priority: 500
+  versionSource:
+    file: version.yaml
+    jsonPath: $.version
+  promotion:
+    Chart.yaml:
+      jsonPaths:
+        - $.appVersion
+    values.yaml:
+      jsonPaths:
+        - $.buslog.image.tag
+        - $.ctrlr.image.tag
+        - $.flask-ui.image.tag
