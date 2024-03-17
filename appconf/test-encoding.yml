@@ -5,7 +5,7 @@ metadata:
 spec:
   applicationSourceSelector:
     matchExpressions:
-    - key: app.ekubernetes.io/instance
+    - key: app.kubernetes.io/instance
       operator: Exists
   priority: 500
   versionSource:
