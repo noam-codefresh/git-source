@@ -1,9 +1,9 @@
 loans:
   image:
     repository: quay.io/noam_codefresh/loans
-    tag: v1
+    tag: v3
 
-  replicaCount: 2
+  replicaCount: 1
   resources:
     limits:
       cpu: 50m
