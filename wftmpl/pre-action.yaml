@@ -13,6 +13,7 @@ spec:
     - name: APP_NAME
     - name: REPO_URL
     - name: BRANCH
+    - name: PATH
   templates:
   - name: echo
     inputs:
@@ -21,6 +22,7 @@ spec:
       - name: APP_NAME
       - name: REPO_URL
       - name: BRANCH
+      - name: PATH
     outputs:
       parameters:
       - name: RESULT
@@ -33,5 +35,5 @@ spec:
       - sh
       source: |
         echo "pre action for \"{{ inputs.parameters.APP_NAMESPACE }}/{{ inputs.parameters.APP_NAME }}\""
-        echo "repoUrl: {{ inputs.parameters.REPO_URL }}, branch: {{ inputs.parameters.BRANCH }}"
+        echo "repoUrl: {{ inputs.parameters.REPO_URL }}, branch: {{ inputs.parameters.BRANCH }}, path: {{ inputs.parameters.PATH }}"
         echo "{\"PRE_ACTION_RESULT\": "\Success\""}" > /tmp/result

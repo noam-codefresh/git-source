@@ -12,12 +12,11 @@ spec:
     - name: APP_NAME
     - name: REPO_URL
     - name: BRANCH
+    - name: PATH
     - name: COMMIT_SHA
     - name: COMMIT_MESSAGE
     - name: COMMIT_AUTHOR
     - name: COMMIT_DATE
-      value: ""
-    - name: COMMIT_TAGS
       value: ""
   entrypoint: echo
   templates:
@@ -32,16 +31,26 @@ spec:
       - name: COMMIT_MESSAGE
       - name: COMMIT_AUTHOR
       - name: COMMIT_DATE
+    outputs:
+      parameters:
+      - name: RESULT
+        valueFrom:
+          path: /tmp/result
+        globalName: RESULT
     script:
       image: alpine
       command:
       - sh
       source: |
+        converted_date=$(date -d "{{ inputs.parameters.COMMIT_DATE }}" +"%a %b %d %H:%M:%S %Y %z")
         echo "post action for \"{{ inputs.parameters.APP_NAMESPACE }}/{{ inputs.parameters.APP_NAME }}\""
-        echo "repoUrl: {{ inputs.parameters.REPO_URL }}, branch: {{ inputs.parameters.BRANCH }}"
+        echo "repoUrl: {{ inputs.parameters.REPO_URL }}, branch: {{ inputs.parameters.BRANCH }}, path: {{ inputs.parameters.PATH }}"
+        echo ""
         echo "commit {{ inputs.parameters.COMMIT_SHA }}"
         echo "Author: {{ inputs.parameters.COMMIT_AUTHOR }}"
-        echo "Date:   {{ inputs.parameters.COMMIT_DATE }}"
+        echo "Date:   ${converted_date}"
         echo ""
         echo "    {{ inputs.parameters.COMMIT_MESSAGE }}"
         echo ""
+        echo "{\"POST_ACTION_RESULT\": "\Success\""}" > /tmp/result
+ 
