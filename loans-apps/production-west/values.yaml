@@ -15,3 +15,5 @@ loans:
     image:
       repository: quay.io/noam_codefresh/interest
       tag: v1
+
+# a change in a different directory
