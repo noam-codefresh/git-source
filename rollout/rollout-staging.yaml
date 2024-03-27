@@ -1,21 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: loans-production-west
+  name: rollout-staging
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
   labels:
-    codefresh.io/product: loans
-    env: production
+    codefresh.io/product: rollout
+    env: staging
 spec:
   project: default
   source:
     repoURL: https://github.com/noam-codefresh/git-source.git
     targetRevision: main
-    path: loans-apps/production-west
+    path: rollout-apps/staging
   destination:
     name: in-cluster
-    namespace: production-west
+    namespace: staging
   syncPolicy:
     automated:
       prune: true

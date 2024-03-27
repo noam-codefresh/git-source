@@ -1,18 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: rollout-demo
+  name: rollout-production-west
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
+  labels:
+    codefresh.io/product: rollout
+    env: production
 spec:
   project: default
   source:
-    path: .
-    repoURL: https://github.com/danielm-codefresh/canary-rollout.git
-    targetRevision: HEAD
+    repoURL: https://github.com/noam-codefresh/git-source.git
+    targetRevision: main
+    path: rollout-apps/production-west
   destination:
     name: in-cluster
-    namespace: runtime
+    namespace: production-east
   syncPolicy:
     automated:
       prune: true

@@ -1,21 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: loans-production-west
+  name: rollout-qa
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground
   labels:
-    codefresh.io/product: loans
-    env: production
+    codefresh.io/product: rollout
+    env: qa
 spec:
   project: default
   source:
     repoURL: https://github.com/noam-codefresh/git-source.git
     targetRevision: main
-    path: loans-apps/production-west
+    path: rollout-apps/qa
   destination:
     name: in-cluster
-    namespace: production-west
+    namespace: qa
   syncPolicy:
     automated:
       prune: true
