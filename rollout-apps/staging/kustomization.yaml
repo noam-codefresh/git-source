@@ -5,5 +5,5 @@ resources:
 - canary-rollout.yaml
 - canary-service.yaml
 - canary-ingress.yaml
-- canary-preview-service.a
+- canary-preview-service.yaml
 - canary-preview-ingress.yaml

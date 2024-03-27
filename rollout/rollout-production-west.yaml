@@ -1,29 +1,29 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: rollout-production-west
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io/foreground
-  labels:
-    codefresh.io/product: rollout
-    env: production
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/noam-codefresh/git-source.git
-    targetRevision: main
-    path: rollout-apps/production-west
-  destination:
-    name: in-cluster
-    namespace: production-east
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - PrunePropagationPolicy=foreground
-      - Replace=false
-      - PruneLast=false
-      - Validate=true
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=false
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: rollout-production-west
+#   finalizers:
+#     - resources-finalizer.argocd.argoproj.io/foreground
+#   labels:
+#     codefresh.io/product: rollout
+#     env: production
+# spec:
+#   project: default
+#   source:
+#     repoURL: https://github.com/noam-codefresh/git-source.git
+#     targetRevision: main
+#     path: rollout-apps/production-west
+#   destination:
+#     name: in-cluster
+#     namespace: production-east
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - PrunePropagationPolicy=foreground
+#       - Replace=false
+#       - PruneLast=false
+#       - Validate=true
+#       - CreateNamespace=true
+#       - ApplyOutOfSyncOnly=false
