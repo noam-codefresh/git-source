@@ -18,9 +18,9 @@ spec:
     - name: COMMIT_AUTHOR
     - name: COMMIT_DATE
       value: ""
-  entrypoint: echo
+  entrypoint: post-action
   templates:
-  - name: echo
+  - name: post-action
     inputs:
       parameters:
       - name: APP_NAMESPACE

@@ -6,7 +6,7 @@ metadata:
     codefresh.io/promotion: 'true'
 spec:
   serviceAccountName: promotion-template
-  entrypoint: echo
+  entrypoint: pre-action
   arguments:
     parameters:
     - name: APP_NAMESPACE
@@ -15,7 +15,7 @@ spec:
     - name: BRANCH
     - name: PATH
   templates:
-  - name: echo
+  - name: pre-action
     inputs:
       parameters:
       - name: APP_NAMESPACE

@@ -4,9 +4,8 @@ metadata:
   name: base-helm
 spec:
   applicationSourceSelector:
-    matchExpressions:
-    - key: codefresh.io/product
-      operator: Exists
+    matchLabels:
+      codefresh.io/product: loans
   priority: 0
   versionSource:
     file: Chart.yaml
