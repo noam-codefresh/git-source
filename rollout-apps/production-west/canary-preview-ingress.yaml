@@ -13,13 +13,13 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-  - host: noam.rnd.sandbox.codefresh.io
-    http:
-      paths:
-      - path: /rollout/production-west/preview
-        pathType: Prefix
-        backend:
-          service:
-            name: canary-demo-preview
-            port:
-              number: 80
+    - host: noam.rnd.sandbox.codefresh.io
+      http:
+        paths:
+          - path: /rollout/qa/preview
+            pathType: Prefix
+            backend:
+              service:
+                name: canary-demo-preview
+                port:
+                  number: 80
