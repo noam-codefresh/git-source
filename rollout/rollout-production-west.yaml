@@ -15,7 +15,7 @@ spec:
     path: rollout-apps/production-west
   destination:
     name: in-cluster
-    namespace: production-east
+    namespace: production-west
   syncPolicy:
     automated:
       prune: true
