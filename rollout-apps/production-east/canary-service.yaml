@@ -4,10 +4,10 @@ metadata:
   name: canary-demo
 spec:
   ports:
-  - port: 80
-    targetPort: http
-    protocol: TCP
-    name: http
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
   selector:
     app: canary-demo
   type: LoadBalancer
