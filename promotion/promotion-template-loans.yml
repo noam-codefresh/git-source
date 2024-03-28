@@ -1,7 +1,7 @@
 apiVersion: codefresh.io/v1beta1
 kind: PromotionTemplate
 metadata:
-  name: base-helm
+  name: loans
 spec:
   applicationSourceSelector:
     matchLabels:
