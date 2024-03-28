@@ -1,0 +1,19 @@
+apiVersion: codefresh.io/v1beta1
+kind: PromotionTemplate
+metadata:
+  name: expression
+spec:
+  applicationSourceSelector:
+    matchExpressions:
+    - key: something.with.dots/and/backslash
+      operator: NotIn
+      values:
+      - production
+  priority: 0
+  versionSource:
+    file: Chart.yaml
+    jsonPath: $.version
+  promotion:
+    canary-rollout.yaml:
+      jsonPaths:
+      - $..image
