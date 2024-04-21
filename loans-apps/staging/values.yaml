@@ -1,7 +1,7 @@
 loans:
   image:
     repository: quay.io/noam_codefresh/loans
-    tag: v2
+    tag: v1
 
   replicaCount: 1
   resources:
@@ -15,6 +15,6 @@ loans:
 interest:
   image:
     repository: quay.io/noam_codefresh/interest
-    tag: v2
+    tag: v1
 
   replicaCount: 1
