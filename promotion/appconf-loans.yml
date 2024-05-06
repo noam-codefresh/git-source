@@ -10,4 +10,4 @@
 #   promotion:
 #     for-loans.yaml:
 #       jsonPaths:
-#         - server.env.SESSION_INTERVAL
+#       - server.env.SESSION_INTERVAL

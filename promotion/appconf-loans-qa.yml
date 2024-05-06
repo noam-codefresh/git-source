@@ -11,4 +11,4 @@
 #   promotion:
 #     for-loans-qa.yaml:
 #       jsonPaths:
-#         - something
+#       - something

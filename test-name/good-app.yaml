@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: rgs-app #
   finalizers:
-    - resources-finalizer.argocd.argoproj.io/foreground
+  - resources-finalizer.argocd.argoproj.io/foreground
 spec:
   project: rgs #
   source:
@@ -18,9 +18,9 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - PrunePropagationPolicy=foreground
-      - Replace=false
-      - PruneLast=false
-      - Validate=true
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=false
+    - PrunePropagationPolicy=foreground
+    - Replace=false
+    - PruneLast=false
+    - Validate=true
+    - CreateNamespace=true
+    - ApplyOutOfSyncOnly=false

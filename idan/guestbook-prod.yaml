@@ -3,7 +3,7 @@ kind: Application
 metadata:
   name: guestbook-prod
   finalizers:
-    - resources-finalizer.argocd.argoproj.io/foreground
+  - resources-finalizer.argocd.argoproj.io/foreground
   labels:
     codefresh.io/product: guestbook
 spec:
@@ -17,11 +17,11 @@ spec:
     namespace: idan-production
   syncPolicy:
     syncOptions:
-      - PrunePropagationPolicy=foreground
-      - Replace=false
-      - PruneLast=false
-      - Validate=true
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=false
-      - ServerSideApply=true
-      - RespectIgnoreDifferences=false
+    - PrunePropagationPolicy=foreground
+    - Replace=false
+    - PruneLast=false
+    - Validate=true
+    - CreateNamespace=true
+    - ApplyOutOfSyncOnly=false
+    - ServerSideApply=true
+    - RespectIgnoreDifferences=false

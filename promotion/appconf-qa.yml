@@ -10,4 +10,4 @@
 #   promotion:
 #     for-qa.yaml:
 #       jsonPaths:
-#         - something-else-asd
+#       - something-else-asd
