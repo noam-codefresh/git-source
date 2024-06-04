@@ -11,11 +11,17 @@ spec:
     - name: APP_NAMESPACE
     - name: APP_NAME
     - name: REPO_URL
+      value: ""
     - name: BRANCH
+      value: ""
     - name: PATH
+      value: ""
     - name: COMMIT_SHA
+      value: ""
     - name: COMMIT_MESSAGE
+      value: ""
     - name: COMMIT_AUTHOR
+      value: ""
     - name: COMMIT_DATE
       value: ""
   entrypoint: post-action
