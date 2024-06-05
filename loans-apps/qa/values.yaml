@@ -18,6 +18,3 @@ interest:
     tag: v2
 
   replicaCount: 1
-
-# unrelated change
-# another change
