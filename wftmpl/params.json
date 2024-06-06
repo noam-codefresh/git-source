@@ -7,6 +7,6 @@
     "ACTION_BODY": "{\"srcAppId\": {\"runtime\": \"ngrok-noam\", \"namespace\": \"runtime\", \"name\": \"loans-qa\"}, \"destAppId\": {\"runtime\": \"ngrok-noam\", \"namespace\": \"runtime\", \"name\": \"loans-staging\"}, \"message\": \"simulating task manually\"}",
     "POST_ACTION_ONLY": "false",
     "POST_ACTION_TMPL": "post-action",
-    "ARGS": "{\"APP_NAME\":\"loans-staging\", \"APP_NAMESPACE\": \"runtime\", \"REPO_URL\": \"https://github.com/noam-codefresh/git-source.git\", \"BRANCH\": \"main\"}",
+    "ARGS": "{\"APP_NAME\":\"loans-staging\", \"APP_NAMESPACE\": \"runtime\", \"REPO_URL\": \"https://github.com/ATGardner/git-source.git\", \"BRANCH\": \"main\"}",
     "LABELS": "codefresh.io/another-label=another-value"
 }

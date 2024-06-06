@@ -7,7 +7,7 @@ spec:
   goTemplateOptions: ["missingkey=error"]
   generators:
   - git:
-      repoURL: https://github.com/noam-codefresh/git-source.git
+      repoURL: https://github.com/ATGardner/git-source.git
       revision: HEAD
       directories:
       - path: appset-apps/*
@@ -19,7 +19,7 @@ spec:
       project: default
       source:
         path: '{{.path.path}}'
-        repoURL: https://github.com/noam-codefresh/git-source.git
+        repoURL: https://github.com/ATGardner/git-source.git
         targetRevision: HEAD
       destination:
         namespace: runtime

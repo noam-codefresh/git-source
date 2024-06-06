@@ -11,7 +11,7 @@ spec:
   project: default
   source:
     path: loans-apps/qa
-    repoURL: https://github.com/noam-codefresh/git-source.git
+    repoURL: https://github.com/ATGardner/git-source.git
     targetRevision: main
   destination:
     name: in-cluster

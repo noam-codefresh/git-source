@@ -8,7 +8,7 @@ spec:
   project: hulk-team #
   source:
     path: good-app #
-    repoURL: https://github.com/noam-codefresh/git-source.git #
+    repoURL: https://github.com/ATGardner/git-source.git #
     targetRevision: HEAD #
   destination:
     name: in-cluster

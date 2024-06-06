@@ -10,7 +10,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/noam-codefresh/git-source.git
+    repoURL: https://github.com/ATGardner/git-source.git
     targetRevision: main
     path: loans-apps/staging
   destination:
