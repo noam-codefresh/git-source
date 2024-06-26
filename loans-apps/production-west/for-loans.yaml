@@ -3,8 +3,9 @@ database:
   port: 5432
   username: myuser-prod
 
+
 server:
-  port: https://prod-fe.server
+  port: 8080
   timeout: 30
   env:
     SESSION_INTERVAL: 1500

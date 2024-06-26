@@ -2,10 +2,9 @@ apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
   name: pre-action
-  labels:
-    codefresh.io/promotion: 'true'
+  annotations:
+    codefresh.io/workflow-origin: promotion
 spec:
-  serviceAccountName: promotion-template
   entrypoint: pre-action
   arguments:
     parameters:

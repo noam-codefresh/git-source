@@ -4,17 +4,15 @@ metadata:
   name: base-flow
 spec:
   triggerEnvironment: qa
-  # postTrigger: 'post-action'
+  postTrigger: 'post-action'
   steps:
   - environment: staging
     dependsOn:
     - qa
     policy:
-      # preAction and postAction are *not* required
       preAction: 'pre-action'
       postAction: 'post-action'
-      # action is a required field
-      action: commit # commit|pr|none
+      action: commit
 
   - environment: prod
     dependsOn:
@@ -22,4 +20,4 @@ spec:
     policy:
       preAction: 'pre-action'
       postAction: 'post-action'
-      action: commit # commit|pr|none
+      action: commit

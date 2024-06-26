@@ -19,6 +19,3 @@ spec:
     values.yaml:
       jsonPaths:
       - $..image
-    requirements.yaml:
-      jsonPaths:
-      - "$.dependencies"
