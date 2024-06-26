@@ -15,6 +15,6 @@ loans:
 interest:
   image:
     repository: quay.io/noam_codefresh/interest
-    tag: v2
+    tag: v3
 
   replicaCount: 1
