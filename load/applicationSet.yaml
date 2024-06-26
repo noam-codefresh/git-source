@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: load-applicationset
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/atgardner/git-source
+      revision: HEAD
+      files:
+      - path: "load-apps/*.json"
+  template:
+    metadata:
+      name: "load-app-{{.path.filename}}"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/atgardner/git-source
+        targetRevision: HEAD
+        path: loans-apps/qa
+      destination:
+        name: in-cluster
+        namespace: "load-{{.path.filename}}"
