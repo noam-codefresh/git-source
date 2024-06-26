@@ -3,6 +3,8 @@ kind: ApplicationSet
 metadata:
   name: load-applicationset
 spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
   - git:
       repoURL: https://github.com/atgardner/git-source
@@ -11,7 +13,7 @@ spec:
       - path: "load-apps/*.json"
   template:
     metadata:
-      name: '{{.path.basename}}'
+      name: "load-{{.path.filename}}"
     spec:
       project: default
       source:
@@ -20,4 +22,4 @@ spec:
         path: loans-apps/qa
       destination:
         name: in-cluster
-        namespace: '{{.path.basename}}'
+        namespace: "load-{{.path.filename}}"
