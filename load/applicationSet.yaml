@@ -22,7 +22,7 @@ spec:
         path: load-apps/app
       destination:
         name: in-cluster
-        namespace: "load-{{.path.filenameNormalized}}"
+        namespace: 'load-{{.path.filenameNormalized | replace ".json" ""}}'
       syncPolicy:
         automated:
           prune: true
