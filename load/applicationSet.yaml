@@ -11,7 +11,7 @@ spec:
       - path: "load-apps/*.json"
   template:
     metadata:
-      name: "{{.path.filename}}"
+      name: '{{.path.filename}}'
     spec:
       project: default
       source:
@@ -20,4 +20,4 @@ spec:
         path: loans-apps/qa
       destination:
         name: in-cluster
-        namespace: "load-{{.path.filename}}"
+        namespace: '{{.path.filename}}'
