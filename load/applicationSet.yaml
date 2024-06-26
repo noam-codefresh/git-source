@@ -11,7 +11,7 @@ spec:
       - path: "load-apps/*.json"
   template:
     metadata:
-      name: "load-app-{{.path.filename}}"
+      name: "{{.path.filename}}"
     spec:
       project: default
       source:
