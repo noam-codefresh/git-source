@@ -19,7 +19,22 @@ spec:
       source:
         repoURL: https://github.com/atgardner/git-source
         targetRevision: HEAD
-        path: loans-apps/qa
+        path: load-apps/app
       destination:
         name: in-cluster
         namespace: "load-{{.path.filename}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: false
+        syncOptions:
+        - PrunePropagationPolicy=foreground
+        - Replace=false
+        - PruneLast=false
+        - Validate=true
+        - CreateNamespace=true
+        - ApplyOutOfSyncOnly=false
+        - ServerSideApply=true
+        - RespectIgnoreDifferences=false
+
